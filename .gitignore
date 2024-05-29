@@ -1,0 +1,12 @@
+
+.coverage
+
+.env
+
+.vscode/
+
+__pycache__/
+
+explanations/
+
+results/
