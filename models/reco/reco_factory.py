@@ -6,7 +6,7 @@ import json
 class RecoFactory:
     @staticmethod
     def from_file(file_path: str) -> List[List[RecoRel]]:
-        with open(file_path) as f:
+        with open(file_path, "r") as f:
             return RecoFactory.from_json(f.read())
 
     @staticmethod

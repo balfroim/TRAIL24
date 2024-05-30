@@ -1,3 +1,4 @@
+from models.users.user import User
 import pytest
 from models.users.user_registry import UserRegistry
 from models.users.user_row import UserRow
@@ -13,3 +14,12 @@ class TestUserRegistry:
         assert user.uid == 1
         assert user.gender == 'F'
         assert user.age == "20"
+
+    def test_to_facts(self):
+        # Arrange
+        user = User(1, 2, 'F', '20')
+        # Act
+        facts = user.to_facts()
+        # Assert
+        assert facts == f"""gender(User1, "F")
+age(User1, "20")"""

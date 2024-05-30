@@ -1,3 +1,4 @@
+from models.products.product import Product
 from models.products.product_registry import ProductRegistry
 from models.products.product_mapping_row import ProductMappingRow
 from models.products.product_row import ProductRow
@@ -21,3 +22,12 @@ class TestProductRegistry:
         assert product.eid == 1
         assert product.pid == 1
         assert product.name == 'test_product'
+
+    def test_to_facts(self):
+        # Arrange
+        product = Product(1, 2, 'test_product', 'test_genre')
+        # Act
+        facts = product.to_facts()
+        # Assert
+        assert facts == """name(Product1, "test_product")
+genre(Product1, "test_genre")"""

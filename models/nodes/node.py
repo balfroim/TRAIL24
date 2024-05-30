@@ -8,3 +8,7 @@ class Node:
     @abstractmethod
     def from_rows(self, row, mapping_row):
         raise NotImplementedError
+    
+    @abstractmethod
+    def to_facts(self):
+        raise NotImplementedError

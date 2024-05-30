@@ -18,9 +18,11 @@ class Product(Node):
             genre=product_row.genre,
             eid=product_mapping_row.new_id
         )
-    # def __init__(self, product_row: ProductRow, product_mapping_row: ProductMappingRow):
-    #     assert product_row.pid == product_mapping_row.rating_id
-    #     self.pid = product_row.pid
-    #     self.name = product_row.name
-    #     self.genre = product_row.genre
-    #     super().__init__(product_mapping_row.new_id)
+    
+    def __str__(self):
+        return f"Product{self.eid}"
+    
+    def to_facts(self):
+        return f"""name({self}, "{self.name}")
+genre({self}, "{self.genre}")"""
+    

@@ -9,3 +9,6 @@ class Rating:
     user: User
     product: Product
     rating: float
+
+    def to_facts(self) -> str:
+        return f"rated({self.user}, {self.product}, {self.rating})"

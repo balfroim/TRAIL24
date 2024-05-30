@@ -18,3 +18,10 @@ class User(Node):
             gender=user_row.gender,
             age=user_row.age
         )
+    
+    def __str__(self):
+        return f"User{self.eid}"
+    
+    def to_facts(self):
+        return f"""gender({self}, "{self.gender}")
+age({self}, "{self.age}")"""
