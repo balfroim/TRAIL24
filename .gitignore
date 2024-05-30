@@ -12,3 +12,5 @@ explanations/
 results/
 
 notebooks/
+
+*.pkl

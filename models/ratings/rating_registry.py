@@ -6,6 +6,7 @@ from models.ratings.rating_factory import RatingFactory
 from models.ratings.rating_row import RatingRow
 from models.users.user_registry import UserRegistry
 
+
 class RatingRegistry:
     def __init__(self, ratings: List[RatingRow], user_registry: UserRegistry, product_registry: ProductRegistry):
         self.ratings: List[Rating] = RatingFactory().create_ratings(ratings, user_registry, product_registry)
