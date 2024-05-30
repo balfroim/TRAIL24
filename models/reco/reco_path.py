@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 
 from models.reco.reco_node import RecoNode
 from models.reco.reco_rel import RecoRel
@@ -15,3 +15,7 @@ class RecoPath:
     
     def get_nth_rel(self, n: int) -> RecoRel:
         return self.rels[n]
+    
+    @property
+    def recommendation(self) -> Tuple[RecoNode, RecoNode]:
+        return self.rels[0].in_node, self.rels[-1].out_node
