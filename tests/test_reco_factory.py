@@ -9,15 +9,15 @@ class TestRecoFactory:
     
     @patch('models.reco.reco_factory.open', new_callable=mock_open)
     def test_from_file(self, mock_open_file):
-        mock_open_file.side_effect = [StringIO('[["self_loop", "user", 6], ["watched", "product", 2389], ["watched", "user", 999], ["watched", "product", 2386]]')]
-        reco_rels = RecoFactory.from_file("file_path")
+        mock_open_file.side_effect = [StringIO('[[["self_loop", "user", 6], ["watched", "product", 2389], ["watched", "user", 999], ["watched", "product", 2386]]]')]
+        reco_rels = RecoFactory.from_file("file_path")[0]
         user6 = RecoNode("user", 6)
         product2389 = RecoNode("product", 2389)
         user999 = RecoNode("user", 999)
         product2386 = RecoNode("product", 2386)
-        assert reco_rels[0] == RecoRel(user6, "watched", product2389)
-        assert reco_rels[1] == RecoRel(user999, "watched", product2389)
-        assert reco_rels[2] == RecoRel(user999, "watched", product2386)
+        assert reco_rels.get_nth_rel(0) == RecoRel(user6, "watched", product2389)
+        assert reco_rels.get_nth_rel(1) == RecoRel(user999, "watched", product2389)
+        assert reco_rels.get_nth_rel(2) == RecoRel(user999, "watched", product2386)
 
     def test_to_facts(self):
         # Arrange
