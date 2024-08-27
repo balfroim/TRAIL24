@@ -12,6 +12,7 @@
 You can use the `prompt_generation.ipynb` notebook as an example of how to use this code.
 
 NB: You'll need a [Huggingface](https://huggingface.co/) API key to use LLM-related functions.
+You can put it in a `.env` file and use `HUGGINGFACEHUB_API_TOKEN` key.
 
 ## Project Description
 

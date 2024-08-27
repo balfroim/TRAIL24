@@ -21,3 +21,14 @@ class RatingRegistry:
     
     def find_user_product_rating(self, user_id: int, product_id: int) -> Rating:
         return next(rating for rating in self.ratings if rating.user.uid == user_id and rating.product.pid == product_id)
+
+    def add_rating(self, rating_data: Rating) -> Rating:
+        assert self.user_registry.find_by_uid(rating_data.user.uid) is not None
+        new_rating = Rating(
+            user=rating_data.user,
+            product=rating_data.product,
+            rating=rating_data.rating,
+        )
+        self.ratings.append(new_rating)
+
+        return new_rating
