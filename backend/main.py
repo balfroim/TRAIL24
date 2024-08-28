@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from pydantic import BaseModel
 
 from models.csv_loader import CSVLoader
@@ -80,18 +80,20 @@ def rate_product(user_id: int, rating: RatingSchema):
     rating = Rating(user, product, rating.value)
     rating_registry.add_rating(rating)
 
-    return {}
+    return Response(status_code=status.HTTP_200_OK)
 
-# TODO recommend
 @app.get("/rec/{user_id}")
 async def get_recommendation(user_id: int):
-    return {}
+    user = user_registry.find_by_uid(user_id)
+    reco_path = recommender.recommend(user)[0]
+    user_reco_path_dict[user_id] = reco_path
+    reco_product = product_registry.find_by_eid(reco_path.nodes[-1].entity_id)
 
-# TODO explain + [recommendation]
+    return reco_product.name
+
 @app.get("/explain/{user_id}")
 async def get_explanation(user_id: int):
     reco_path = user_reco_path_dict[user_id]
+    explanation = explainer.explain(reco_path)
 
-    # compute explanation
-
-    return {}
+    return explanation
