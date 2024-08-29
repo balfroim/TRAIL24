@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from models.csv_loader import CSVLoader
@@ -37,6 +38,14 @@ name_pid_tuples = [
 ]
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class ProfileSchema(BaseModel):
     gender_cat: str
