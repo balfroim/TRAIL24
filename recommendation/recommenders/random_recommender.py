@@ -21,44 +21,54 @@ class RandomRecommender(AbstractRecommender):
         random.seed(seed)
 
     def recommend(self, target_user: User) -> List[RecoPath]:
-        # TODO This process need some optimization... ^^
         #1: gather target_user's ratings
-        user_ratings = self.rating_registry.find_user_ratings(target_user.uid)
-        user_product_pid_set = { rating.product.pid for rating in user_ratings }
+        user_product_pid_set = {
+            rating.product.pid
+            for rating in self.rating_registry.find_user_ratings(target_user.uid)
+        }
 
         #2: gather other users' ratings of products rated by target_user
         partial_rating_paths = []
-        for user_rating in user_ratings:
-            product = user_rating.product
-            related_ratings = [rating for rating in self.rating_registry.find_product_ratings(product.pid)]
-            # remove target_user's ratings
-            related_ratings = filter(lambda rating: rating.user.uid != target_user.uid, related_ratings)
-            for related_rating in related_ratings:
-                partial_rating_paths.append([user_rating, related_rating])
+        for pid in user_product_pid_set:
+            related_user_uids = {
+                rating.user.uid
+                for rating in self.rating_registry.find_product_ratings(pid)
+            }
+            for uid in related_user_uids:
+                partial_rating_paths.append([target_user.uid, pid, uid])
 
         #3: gather product ratings by other related users
         complete_rating_paths = []
         for partial_rating_path in partial_rating_paths:
-            same_product_rating = partial_rating_path[-1]
-            related_user_ratings = self.rating_registry.find_user_ratings(same_product_rating.user.uid)
-            # remove ratings of products already rated by target_user
-            related_user_ratings = filter(lambda rating: rating.product.pid not in user_product_pid_set, related_user_ratings)
-            for related_user_rating in related_user_ratings:
-                complete_rating_paths.append([*partial_rating_path, related_user_rating])
+            related_user_uid = partial_rating_path[-1]
+            related_product_pids = {
+                rating.product.pid
+                for rating in self.rating_registry.find_user_ratings(related_user_uid)
+            }
+            for pid in related_product_pids:
+                complete_rating_paths.append([*partial_rating_path, pid])
 
-        #4: select one at random
-        recommended_rating_path = random.choice(complete_rating_paths)
+        #4: filter on unknown products for target user
+        filtered_complete_rating_paths = [
+            path for path in complete_rating_paths
+            if path[-1] not in user_product_pid_set
+        ]
 
-        #5: build reco path
-        #TODO need to extract this code in another place (SRP)
+        #5: select one at random
+        recommended_rating_path = random.choice(filtered_complete_rating_paths)
+
+        #6: build reco path and return
+        return [self.__build_reco_path(recommended_rating_path)]
+
+    def __build_reco_path(self, node_list: List[int]) -> RecoPath:
         reco_path = RecoPath([], [])
-        for rating in recommended_rating_path:
-            reco_user_node = RecoNode("user", rating.user.eid)
-            reco_product_node = RecoNode("product", rating.product.eid)
-            reco_path.nodes.append(reco_user_node)
-            reco_path.nodes.append(reco_product_node)
-            reco_rel = RecoRel(reco_user_node, "watched", reco_product_node)
-            reco_path.rels.append(reco_rel)
 
-        #TODO return more than a single recommendation
-        return [reco_path]
+        for i, node_id in enumerate(node_list):
+            if i % 2 == 0:
+                reco_node = RecoNode("user", self.user_registry.find_by_uid(node_id).eid)
+            else:
+                reco_node = RecoNode("product", self.product_registry.find_by_pid(node_id).eid)
+                reco_rel = RecoRel(reco_path.nodes[-1], "watched", reco_node)
+                reco_path.rels.append(reco_rel)
+            reco_path.nodes.append(reco_node)
+        return reco_path

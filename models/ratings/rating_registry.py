@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import List
 from models.products.product_registry import ProductRegistry
 from models.ratings.rating import Rating
@@ -13,14 +12,21 @@ class RatingRegistry:
         self.user_registry = user_registry
         self.product_registry = product_registry
 
+        # inner data structures to optimize find methods
+        self.__user_rating_dict = {rating.user.uid:[] for rating in self.ratings}
+        self.__product_rating_dict = {rating.product.pid:[] for rating in self.ratings}
+        for rating in self.ratings:
+            self.__user_rating_dict[rating.user.uid].append(rating)
+            self.__product_rating_dict[rating.product.pid].append(rating)
+
     def find_user_ratings(self, user_id: int) -> List[Rating]:
-        return [rating for rating in self.ratings if rating.user.uid == user_id]
+        return self.__user_rating_dict[user_id]
     
     def find_product_ratings(self, product_id: int) -> List[Rating]:
-        return [rating for rating in self.ratings if rating.product.pid == product_id]
+        return self.__product_rating_dict[product_id]
     
     def find_user_product_rating(self, user_id: int, product_id: int) -> Rating:
-        return next(rating for rating in self.ratings if rating.user.uid == user_id and rating.product.pid == product_id)
+        return next(rating for rating in self.__product_rating_dict[product_id] if rating.user.uid == user_id)
 
     def add_rating(self, rating_data: Rating) -> Rating:
         assert self.user_registry.find_by_uid(rating_data.user.uid) is not None
@@ -30,5 +36,12 @@ class RatingRegistry:
             rating=rating_data.rating,
         )
         self.ratings.append(new_rating)
+
+        # update inner data structures
+        if new_rating.user.uid in self.__user_rating_dict:
+            self.__user_rating_dict[rating_data.user.uid].append(new_rating)
+        else:
+            self.__user_rating_dict[rating_data.user.uid] = [new_rating]
+        self.__product_rating_dict[rating_data.product.pid].append(new_rating)
 
         return new_rating
