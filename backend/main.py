@@ -55,6 +55,8 @@ class RatingSchema(BaseModel):
     product_id: int
     value: float
 
+class QuerySchema(BaseModel):
+    value: str
 
 # TODO to implement
 @app.get("/")
@@ -71,13 +73,13 @@ def set_profile(profile: ProfileSchema):
     return user.uid
 
 @app.post("/search")
-def search_products(query: str):
-    formatted_query = query.lower().strip()
+def search_products(query: QuerySchema):
+    formatted_value = query.value.lower().strip()
 
-    if not formatted_query:
+    if not formatted_value:
         return {}
 
-    results = [t for t in name_pid_tuples if formatted_query in t[0]]
+    results = [t for t in name_pid_tuples if formatted_value in t[0]]
 
     return {t[1]: t[0] for t in results}
 

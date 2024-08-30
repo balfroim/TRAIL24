@@ -1,40 +1,54 @@
-<script setup>
-import { ref } from 'vue'
-
-defineProps({
-  msg: String,
-})
-
-const count = ref(0)
-</script>
-
 <template>
-  <h1>{{ msg }}</h1>
+  <h1>Recommendation ({{ userId }})</h1>
 
   <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
+    <p>{{ recommendation }}</p>
   </div>
 
-  <p>
-    Check out
-    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
-      >create-vue</a
-    >, the official Vue + Vite starter
-  </p>
-  <p>
-    Learn more about IDE Support for Vue in the
-    <a
-      href="https://vuejs.org/guide/scaling-up/tooling.html#ide-support"
-      target="_blank"
-      >Vue Docs Scaling up Guide</a
-    >.
-  </p>
-  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
+  <div class="card">
+    <button v-if="!explanation" @click="getExplanation">Explain</button>
+    <p v-else>{{ explanation }}</p>
+  </div>
 </template>
+
+<script>
+export default {
+  props: ['userId'],
+  data() {
+    return {
+      recommendation: "",
+      explanation: ""
+    }
+  },
+  methods: {
+    async getRecommendation() {
+      const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const url = `http://127.0.0.1:8000/rec/${this.userId}`;
+        const options = {
+          method: "GET",
+          headers: myHeaders,
+        }
+        const response = await fetch(url, options);
+        this.recommendation = await response.json();
+    },
+    async getExplanation() {
+      const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const url = `http://127.0.0.1:8000/explain/${this.userId}`;
+        const options = {
+          method: "GET",
+          headers: myHeaders,
+        }
+        const response = await fetch(url, options);
+        this.explanation = await response.json();
+    }
+  },
+  mounted() {
+    this.getRecommendation();
+  }
+}
+</script>
 
 <style scoped>
 .read-the-docs {

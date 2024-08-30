@@ -2,7 +2,7 @@
   <h1>Search & Rate ({{ userId }})</h1>
 
   <div class="card">
-    <form>
+    <form @submit.prevent="searchProduct">
       <div>
         <label for="search_query">Search for a movie:</label><br>
         <input type="text" id="search_query" name="search_query" v-model="searchQuery">
@@ -14,11 +14,11 @@
   </div>
 
   <div class="card">
-    <form>
+    <form @submit.prevent="rateProduct">
       <div>
         <label for="select_product">Select a movie:</label><br>
-        <select id="select_product" name="select_product" v-model="selectedProduct">
-          <option value="product_id">Product Name</option>
+        <select id="select_product" name="select_product" v-model="selectedPid">
+          <option v-for="(name, pid) in this.searchResults" :value="pid" :key="pid">{{ name }}</option>
         </select>
       </div>
       <div>
@@ -32,25 +32,66 @@
         </select>
       </div>
       <div>
-        <input type="submit" value="Submit">
+        <input type="submit" value="Submit" :disabled="!selectedPid">
       </div>
     </form>
+  </div>
+
+  <div class="card">
+    <button @click="switchToRec">Recommendation</button>
   </div>
 </template>
 
 <script>
 export default {
   props: ['userId'],
+  emits: ['switch-to-rec'],
   data() {
     return {
       searchQuery: "",
+      searchResults: [],
       ratings: [],
-      selectedProduct: {},
+      selectedPid: 0,
       ratingValue: 3
     }
   },
   methods: {
-
+    async searchProduct() {
+      if (this.searchQuery) {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const url = "http://127.0.0.1:8000/search";
+        const data = {
+          value: this.searchQuery
+        }
+        const options = {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: myHeaders,
+        }
+        const response = await fetch(url, options);
+        this.searchResults = await response.json();
+      }
+    },
+    async rateProduct() {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      const url = `http://127.0.0.1:8000/rate/${this.userId}`;
+      const data = {
+        product_id: this.selectedPid,
+        value: this.ratingValue
+      }
+      const options = {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: myHeaders,
+      }
+      const response = await fetch(url, options);
+      console.log(response);
+    },
+    switchToRec() {
+      this.$emit('switch-to-rec');
+    }
   }
 }
 </script>

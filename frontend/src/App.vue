@@ -1,9 +1,9 @@
 <template>
   <div>
     <Profile v-if="content==='profile'" @set-profile="setProfile" />
-    <SearchRate v-if="content==='search_rate'" :user-id="userId" />
+    <SearchRate v-if="content==='search_rate'" :user-id="userId" @switch-to-rec="switchToRec"/>
 <!-- @recommend="content = 'rec_explain'" -->
-    <RecExplain v-if="content==='rec_explain'"  user-id="userId" />
+    <RecExplain v-if="content==='rec_explain'"  :user-id="userId" />
   </div>
 </template>
 
@@ -31,6 +31,9 @@ export default {
       this.userId = userId;
       console.log(this.userId);
       this.content = "search_rate";
+    },
+    switchToRec() {
+      this.content = "rec_explain";
     }
   }
 }
