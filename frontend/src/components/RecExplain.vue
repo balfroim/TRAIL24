@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import {getExplanationApiCall, getRecommendationApiCall} from "../utils.js";
+
 export default {
   props: ['userId'],
   data() {
@@ -22,26 +24,10 @@ export default {
   },
   methods: {
     async getRecommendation() {
-      const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        const url = `http://127.0.0.1:8000/rec/${this.userId}`;
-        const options = {
-          method: "GET",
-          headers: myHeaders,
-        }
-        const response = await fetch(url, options);
-        this.recommendation = await response.json();
+      this.recommendation = await getRecommendationApiCall(this.userId);
     },
     async getExplanation() {
-      const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        const url = `http://127.0.0.1:8000/explain/${this.userId}`;
-        const options = {
-          method: "GET",
-          headers: myHeaders,
-        }
-        const response = await fetch(url, options);
-        this.explanation = await response.json();
+      this.explanation = await getExplanationApiCall(this.userId);
     }
   },
   mounted() {

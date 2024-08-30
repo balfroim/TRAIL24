@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import {addRateApiCall, searchApiCall} from "../utils.js";
+
 export default {
   props: ['userId'],
   emits: ['switch-to-rec'],
@@ -58,36 +60,18 @@ export default {
   methods: {
     async searchProduct() {
       if (this.searchQuery) {
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        const url = "http://127.0.0.1:8000/search";
         const data = {
           value: this.searchQuery
         }
-        const options = {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: myHeaders,
-        }
-        const response = await fetch(url, options);
-        this.searchResults = await response.json();
+        this.searchResults = await searchApiCall(data);
       }
     },
     async rateProduct() {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      const url = `http://127.0.0.1:8000/rate/${this.userId}`;
       const data = {
         product_id: this.selectedPid,
         value: this.ratingValue
       }
-      const options = {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: myHeaders,
-      }
-      const response = await fetch(url, options);
-      console.log(response);
+      await addRateApiCall(data, this.userId);
     },
     switchToRec() {
       this.$emit('switch-to-rec');

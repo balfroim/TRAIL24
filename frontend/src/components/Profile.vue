@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import {setProfile} from "../utils.js";
+
 export default {
   emits: ["set-profile"],
   data() {
@@ -37,21 +39,11 @@ export default {
   },
   methods: {
     async setProfile() {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      const url = "http://127.0.0.1:8000/set_profile";
       const data = {
         gender_cat: this.gender_cat,
         age_cat: this.age_cat
       }
-      const options = {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: myHeaders,
-      }
-      const response = await fetch(url, options);
-      const userId = await response.json();
-
+      const userId = await setProfile(data);
       this.$emit("set-profile", userId);
     }
   }
