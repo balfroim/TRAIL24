@@ -93,18 +93,36 @@ def rate_product(user_id: int, rating: RatingSchema):
 
     return Response(status_code=status.HTTP_200_OK)
 
+@app.delete("/rate/{user_id}/{product_id}")
+def delete_rating(user_id: int, product_id: int):
+    rating_registry.delete_rating(user_id, product_id)
+
+    return Response(status_code=status.HTTP_200_OK)
+
 @app.get("/rec/{user_id}")
 async def get_recommendation(user_id: int):
     user = user_registry.find_by_uid(user_id)
-    reco_path = recommender.recommend(user)[0]
-    user_reco_path_dict[user_id] = reco_path
-    reco_product = product_registry.find_by_eid(reco_path.nodes[-1].entity_id)
+    reco_paths = recommender.recommend(user)
+    recommendations = {}
+    products = []
+    for reco_path in reco_paths:
+        reco_product = product_registry.find_by_eid(reco_path.nodes[-1].entity_id)
+        products.append(reco_product)
+        recommendations[reco_product.pid] = reco_path
+    user_reco_path_dict[user_id] = recommendations
 
-    return reco_product.name
+    return [
+        {
+            "pid": product.pid,
+            "name": product.name,
+            "genre": product.genre
+        }
+        for product in products
+    ]
 
-@app.get("/explain/{user_id}")
-async def get_explanation(user_id: int):
-    reco_path = user_reco_path_dict[user_id]
+@app.get("/explain/{user_id}/{product_id}")
+async def get_explanation(user_id: int, product_id: int):
+    reco_path = user_reco_path_dict[user_id][product_id]
     explanation = explainer.explain(reco_path)
 
     return explanation

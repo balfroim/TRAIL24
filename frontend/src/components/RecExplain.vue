@@ -5,38 +5,36 @@
     <p>Loading...</p>
   </div>
   <div v-else>
-    <div class="card">
-      <p>{{ recommendation }}</p>
-    </div>
-
-    <div class="card">
-      <button v-if="!explanation" @click="getExplanation">Explain</button>
-      <p v-else>{{ explanation }}</p>
+    <div v-for="product in recommended_products" class="card" :key="product.pid">
+      <p>{{ product.name }}</p>
+      <button v-if="!explanations[product.pid]" @click="getExplanation(product.pid)">Explain</button>
+      <p v-else>{{ explanations[product.pid] }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import {getExplanationApiCall, getRecommendationApiCall} from "../utils.js";
+import {getExplanationApiCall, getRecommendationsApiCall} from "../utils.js";
 
 export default {
   props: ['userId'],
   data() {
     return {
-      recommendation: "",
-      explanation: "",
+      recommended_products: [],
+      explanations: {},
       loading: false
     }
   },
   methods: {
     async getRecommendation() {
       this.loading = true;
-      this.recommendation = await getRecommendationApiCall(this.userId);
+      this.recommended_products = await getRecommendationsApiCall(this.userId);
+      this.recommended_products.map((product) => this.explanations[product.pid] = "");
       this.loading = false;
     },
-    async getExplanation() {
+    async getExplanation(productId) {
       this.loading = true;
-      this.explanation = await getExplanationApiCall(this.userId);
+      this.explanations[productId] = await getExplanationApiCall(this.userId, productId);
       this.loading = false;
     }
   },

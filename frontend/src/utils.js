@@ -35,12 +35,12 @@ export async function addRateApiCall(data, userId) {
   return await genericApiCall("rate", userId, "POST", data);
 }
 
-export async function getRecommendationApiCall(userId) {
+export async function getRecommendationsApiCall(userId) {
   return await genericApiCall("rec", userId, "GET", {})
 }
 
-export async function getExplanationApiCall(userId) {
-  return await genericApiCall("explain", userId, "GET", {});
+export async function getExplanationApiCall(userId, productId) {
+  return await genericApiCall("explain", `${userId}/${productId}`, "GET", {});
 }
 
 export async function setProfile(data) {
