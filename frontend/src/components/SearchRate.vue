@@ -1,6 +1,16 @@
 <template>
   <h1>Search & Rate ({{ userId }})</h1>
 
+  <div>
+    <ul v-if="ratings.length">
+      <li v-for="rating in ratings" :key="rating.productId">
+        {{ rating.productName }} ({{ rating.value }})
+        <button @click="deleteRating(rating.productId)">X</button>
+      </li>
+    </ul>
+    <p v-else>No Rating</p>
+  </div>
+
   <div class="card">
     <form @submit.prevent="searchProduct">
       <div>
@@ -43,7 +53,7 @@
 </template>
 
 <script>
-import {addRateApiCall, searchApiCall} from "../utils.js";
+import {addRateApiCall, deleteRateApiCall, searchApiCall} from "../utils.js";
 
 export default {
   props: ['userId'],
@@ -51,7 +61,7 @@ export default {
   data() {
     return {
       searchQuery: "",
-      searchResults: [],
+      searchResults: {},
       ratings: [],
       selectedPid: 0,
       ratingValue: 3
@@ -67,11 +77,21 @@ export default {
       }
     },
     async rateProduct() {
-      const data = {
+      this.ratings.push({
+        productId: this.selectedPid,
+        productName: this.searchResults[this.selectedPid],
+        value: this.ratingValue
+      });
+      const ratingData = {
         product_id: this.selectedPid,
         value: this.ratingValue
-      }
-      await addRateApiCall(data, this.userId);
+      };
+      await addRateApiCall(ratingData, this.userId);
+    },
+    async deleteRating(productId) {
+      const ratingIndex = this.ratings.findIndex((rating) => rating.productId === productId);
+      this.ratings.splice(ratingIndex, 1);
+      await deleteRateApiCall(this.userId, productId);
     },
     switchToRec() {
       this.$emit('switch-to-rec');

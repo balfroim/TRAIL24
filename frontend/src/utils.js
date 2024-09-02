@@ -35,6 +35,10 @@ export async function addRateApiCall(data, userId) {
   return await genericApiCall("rate", userId, "POST", data);
 }
 
+export async function deleteRateApiCall(userId, productId) {
+  return await genericApiCall("rate", `${userId}/${productId}`, "DELETE", {})
+}
+
 export async function getRecommendationsApiCall(userId) {
   return await genericApiCall("rec", userId, "GET", {})
 }
