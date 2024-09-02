@@ -1,6 +1,9 @@
 <template>
   <h1>Set Profile</h1>
-  <form @submit.prevent="setProfile">
+  <div v-if="loading">
+    <span class="loader"></span>
+  </div>
+  <form v-else @submit.prevent="setProfile">
     <div class="card">
       <label for="gender_cat">Gender:</label><br>
       <select id="gender_cat" name="gender_cat" v-model="gender_cat">
@@ -34,16 +37,19 @@ export default {
   data() {
     return {
       gender_cat: "F",
-      age_cat: "25-34"
+      age_cat: "25-34",
+      loading: false
     }
   },
   methods: {
     async setProfile() {
+      this.loading = true;
       const data = {
         gender_cat: this.gender_cat,
         age_cat: this.age_cat
       }
       const userId = await setProfile(data);
+      this.loading = false;
       this.$emit("set-profile", userId);
     }
   }

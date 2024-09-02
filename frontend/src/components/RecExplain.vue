@@ -2,7 +2,7 @@
   <h1>Recommendation ({{ userId }})</h1>
 
   <div v-if="loading">
-    <p>Loading...</p>
+    <span class="loader"></span>
   </div>
   <div v-else>
     <div v-for="product in recommended_products" class="card" :key="product.pid">
