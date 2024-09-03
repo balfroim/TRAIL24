@@ -16,3 +16,5 @@ results/
 notebooks/
 
 *.pkl
+*.zip
+*.pl
