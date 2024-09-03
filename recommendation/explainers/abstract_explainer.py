@@ -49,3 +49,11 @@ class AbstractExplainer(ABC):
                 product = self.product_registry.find_by_eid(node.entity_id)
                 facts_txt += product.to_facts() + "\n"
         return facts_txt
+    
+    def _prepare_input(self, path):
+        bk = self.generate_facts(path)
+        product_eid = path.recommendation[1].entity_id
+        product = self.product_registry.find_by_eid(product_eid)
+        user_eid = path.recommendation[0].entity_id
+        user = self.user_registry.find_by_eid(user_eid)
+        return bk,product,user
