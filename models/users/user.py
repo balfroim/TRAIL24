@@ -1,3 +1,4 @@
+from models.nodes.fact import Fact
 from models.nodes.node import Node
 from models.users.user_row import UserRow
 from models.users.user_mapping_row import UserMappingRow
@@ -22,6 +23,9 @@ class User(Node):
     def __str__(self):
         return f"User{self.eid}"
     
-    def to_facts(self):
-        return f"""gender({self}, "{self.gender}")
-age({self}, "{self.age}")"""
+    def facts(self):
+        return [
+            Fact("gender", (str(self), str(self.gender))),
+            Fact("age", (str(self), str(self.age)))
+        ]
+    
