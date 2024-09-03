@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from models.nodes.fact import Fact
 from models.products.product import Product
 from models.users.user import User
 
@@ -11,5 +11,7 @@ class Rating:
     rating: float
     timestamp: int
 
-    def to_facts(self) -> str:
-        return f"rated({self.user}, {self.product}, {self.rating})"
+    def facts(self):
+        return [
+            Fact("rated", (str(self.user), str(self.product), str(self.rating)))
+        ]
