@@ -2,6 +2,7 @@
 
 body {
   background-color: rgb(33, 33, 33);
+  background-image: url("../public/background-long.jpg");
 }
 
 h1 {
@@ -46,21 +47,21 @@ h1 {
   margin-left: 10px;
 }
 
-h2 {
+h2, .modal-header {
   color: whitesmoke;
   font-family: 'Mukta', sans-serif;
   font-weight: 50;
   font-size: medium;
 }
 
-p, label {
+p, label, .modal-body {
   color: whitesmoke;
   font-family: 'Mukta', sans-serif;
   font-weight: 50;
   font-size: small;;
 }
 
-colored-text {
+.colored-text {
   color: rgb(46, 165, 239);
 }
 

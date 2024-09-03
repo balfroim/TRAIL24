@@ -1,6 +1,6 @@
 <template>
   <h1 class="page-title">
-    Welcome to <colored-text> Movielens </colored-text>!
+    Welcome to <span class="colored-text"> Movielens </span>!
   </h1>
   <h2 class="page-info">Let's start by setting up your profile</h2>
   <div v-if="loading">

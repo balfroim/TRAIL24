@@ -1,9 +1,9 @@
 <template>
   <h1 class="page-title">Almost there...</h1>
   <p class="page-info">
-    To personnalize your experience with Movielens, we would like to
-    know your favorite movies. <br><colored-text>Please provide the titles
-    of 5 of your favourite movies</colored-text> (the order does not matter).
+    To personalize your experience with Movielens, we would like to
+    know your favorite movies. <br><span class="colored-text">Please provide the titles
+    of 5 of your favourite movies</span> (the order does not matter).
   </p>
   <div v-if="loading">
     <span class="loader"></span>

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-content" :class="content">
+  <div class="page-content">
     <Profile v-if="content==='profile'" @set-profile="setProfile" />
     <SearchRate v-if="content==='search_rate'" :user-id="userId" @switch-to-rec="switchToRec"/>
 <!-- @recommend="content = 'rec_explain'" -->
@@ -37,19 +37,19 @@ export default {
 }
 </script>
 
-<style scoped>
-.profile {
-  background-image: url("../public/background.jpg");
-  background-size: 100%;
-}
+<!--<style scoped>-->
+<!--.profile {-->
+<!--  background-image: url("../public/background.jpg");-->
+<!--  background-size: 100%;-->
+<!--}-->
 
-.search_rate {
-  background-image: url("../public/background-2.jpg");
-  background-size: 100%;
-}
+<!--.search_rate {-->
+<!--  background-image: url("../public/background-2.jpg");-->
+<!--  background-size: 100%;-->
+<!--}-->
 
-.rec_explain {
-  background-image: url("../public/background-3.jpg");
-  background-size: 105%;
-}
-</style>
+<!--.rec_explain {-->
+<!--  background-image: url("../public/background-3.jpg");-->
+<!--  background-size: 105%;-->
+<!--}-->
+<!--</style>-->
