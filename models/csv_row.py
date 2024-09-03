@@ -1,5 +1,5 @@
 from dataclasses import dataclass, fields, is_dataclass
-from typing import Dict, Any, Type, Callable, Optional
+from typing import Dict, Any, Type
 
 
 def csv_row(file_path: str = None) -> Type[Any]:
@@ -8,9 +8,6 @@ def csv_row(file_path: str = None) -> Type[Any]:
     Assumes that the class is a dataclass and that keys in the input dictionary match the dataclass fields.
     """
     def decorator(cls: Type[Any]) -> Type[Any]:
-        if not isinstance(cls, type):
-            print(cls)
-            raise TypeError("Expected a class, got {}".format(type(cls).__name__))
         if not is_dataclass(cls):
             cls = dataclass(cls)
         

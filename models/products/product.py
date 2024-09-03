@@ -1,7 +1,9 @@
+from models.nodes.fact import Fact
 from models.nodes.node import Node
 from models.products.product_row import ProductRow
 from models.products.product_mapping_row import ProductMappingRow
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True)
 class Product(Node):
@@ -22,7 +24,9 @@ class Product(Node):
     def __str__(self):
         return f"Product{self.eid}"
     
-    def to_facts(self):
-        return f"""name({self}, "{self.name}")
-genre({self}, "{self.genre}")"""
+    def facts(self):
+        return [
+            Fact("name", (str(self), self.name)),
+            Fact("genre", (str(self), self.genre))
+        ]
     
