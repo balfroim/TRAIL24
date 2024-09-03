@@ -29,7 +29,10 @@
     </template>
 
     <template v-slot:body>
-      {{ activeExplanationContent }}
+      <p v-for="(explanation, index) in activeExplanationContent" :key="index">
+        Explanation <b>{{ index+1 }}</b><br>
+        {{ explanation }}
+      </p>
     </template>
 
     <template v-slot:footer>
@@ -59,13 +62,13 @@ export default {
       this.loading = true;
       try {
         this.recommended_products = await getRecommendationsApiCall(this.userId);
-        this.recommended_products.map((product) => this.explanations[product.pid] = "");
+        this.recommended_products.map((product) => this.explanations[product.pid] = []);
       } catch (e) {
         console.log(e);
       }
       this.loading = false;
     },
-    async getExplanation(productId) {
+    async getExplanations(productId) {
       this.loading = true;
       try {
         this.explanations[productId] = await getExplanationApiCall(this.userId, productId);
@@ -75,8 +78,8 @@ export default {
       this.loading = false;
     },
     async showExplanation(productId) {
-      if (!this.explanations[productId]) {
-        await this.getExplanation(productId);
+      if (!this.explanations[productId].length) {
+        await this.getExplanations(productId);
       }
       this.activeExplanationPid = productId;
       this.isModalVisible = true;
@@ -96,7 +99,7 @@ export default {
     activeExplanationHeader() {
       if (this.activeExplanationPid) {
         const productName = this.recommended_products.find((product) => product.pid === this.activeExplanationPid).name;
-        return `Explanation for ${productName}`;
+        return `Explanations for ${productName}`;
       } else {
         return "";
       }
@@ -107,9 +110,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>

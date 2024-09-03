@@ -168,8 +168,11 @@ async def get_recommendation(user_id: int):
     ]
 
 @app.get("/explain/{user_id}/{product_id}")
-async def get_explanation(user_id: int, product_id: int):
+async def get_explanations(user_id: int, product_id: int):
     reco_path = user_reco_path_dict[user_id][product_id]
-    explanation = cot_explainer.explain(reco_path)
+    # TODO need to debug explainer (see with Martin)
+    # explanation_with_facts = cot_explainer.explain(reco_path)
+    explanation_with_facts = "Dummy Explanation with facts"
+    explanation_without_facts = "Dummy Explanation without facts"
 
-    return explanation
+    return [explanation_with_facts, explanation_without_facts]

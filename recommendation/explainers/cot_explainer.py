@@ -30,12 +30,12 @@ class COTExplainer(AbstractExplainer):
         reasoning_completion = self.__reasoning_chain.invoke({
             "background_knowledge": bk,
             "user": str(user),
-            "product": str(product)
+            "product_name": str(product)
         }, config={"callbacks": [trace_handler]})
         answering_completion = self.__answering_chain.invoke({
             "reasoning": reasoning_completion,
             "user": str(user),
-            "product": str(product)
+            "product_name": str(product)
         }, config={"callbacks": [trace_handler]})
         return answering_completion, COTTrace(
             reasoning_trace=trace_handler.get_traces()[0],
