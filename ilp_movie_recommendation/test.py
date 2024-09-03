@@ -29,7 +29,7 @@ ratings_df = preprocessing.extract_ratings_data()
 print("extracted")
 
 # Sample 118 rows and save to another Excel file
-preprocessing.sample_and_save(ratings_df, 118, "ratings_sample_dataset.xlsx")
+preprocessing.sample_and_save(ratings_df, 118, "/ilp_movie_recommendation/ratings_sample_dataset.xlsx")
 print("sampled")
 
 #Test logic programs generation
@@ -56,8 +56,13 @@ print('model generator')
 # Generate the model
 induced_hypotheses = ilp_gen.generate_model()
 print("Induced Hypotheses:")
+lines = []
 for clause in induced_hypotheses.clauses:
     print(clause)
+    lines.append(str(clause)+"\n")
+with open("ilp_movie_recommendation/learned_clauses.txt", 'w') as f:
+    f.writelines(lines)
+dskl
 
 # Query the model
 query = "recommend(A,B)."

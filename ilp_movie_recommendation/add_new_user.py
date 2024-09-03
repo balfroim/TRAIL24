@@ -18,14 +18,14 @@ def add_new_user_to_existing_program(file_path, new_user_id, new_user_age, new_u
             new_lines.append(f"{new_user_gender}({new_user_id}).\n")
             new_lines.append(f"{user_movie_genre}({new_movie_id}).\n")
             bg_inserted = True        
-            if ":- end_in_pos." in line and not pos_inserted and rating_movie > 3:
-                # Ajouter la recommandation positive si le rating est > 3 avant la fin de la section pos
-                new_lines.append(f"recommend({new_user_id}, {new_movie_id}).\n")
-                pos_inserted = True        
-            if ":- end_in_neg." in line and not neg_inserted and rating_movie <= 3:
-                # Ajouter la recommandation négative si le rating est <= 3 avant la fin de la section neg
-                new_lines.append(f"recommend({new_user_id}, {new_movie_id}).\n")
-                neg_inserted = True        # Ajouter la ligne originale
+        if ":- end_in_pos." in line and not pos_inserted and rating_movie > 3:
+            # Ajouter la recommandation positive si le rating est > 3 avant la fin de la section pos
+            new_lines.append(f"recommend({new_user_id}, {new_movie_id}).\n")
+            pos_inserted = True        
+        if ":- end_in_neg." in line and not neg_inserted and rating_movie <= 3:
+            # Ajouter la recommandation négative si le rating est <= 3 avant la fin de la section neg
+            new_lines.append(f"recommend({new_user_id}, {new_movie_id}).\n")
+            neg_inserted = True        # Ajouter la ligne originale
         new_lines.append(line)    # Sauvegarder les modifications dans le fichier
     with open(file_path, 'w') as file:
         file.writelines(new_lines)    

@@ -11,71 +11,84 @@ from models.users.user_registry import UserRegistry
 from recommendation.recommenders.abstract_recommender import AbstractRecommender
 
 from andante.program import AndanteProgram
+import numpy as np
 
 
-class RandomRecommender(AbstractRecommender):
+class ILPRecommender(AbstractRecommender):
     """
-    Generates random recommendations for a target user.
+    Generates ILP recommendations for a target user.
     """
     
-    recommender = None
+    clauses = None
     
-    possible_ages = {
-        "Under 18": "under_18",
-        "18-24": "b18to24",
-        "25-34": "b25to34",
-        "35-44": "b35to44",
-        "45-49": "b45to49",
-        "50-55": "b50to55",
-        "56+": "plus56"
+    clauses_dic = {
+        "under_18": "Under 18",
+        "b18to24": "18-24",
+        "b25to34": "25-34",
+        "b35to44": "35-44",
+        "b45to49": "45-49",
+        "b50to55": "50-55",
+        "plus56": "56+",
+        "action": "Action",
+        "adventure": "Adventure",
+        "animation": "Animation",
+        "childrens": "Children's",
+        "comedy": "Comedy",
+        "crime": "Crime",
+        "documentary": "Documentary",
+        "drama": "Drama",
+        "fantasy": "Fantasy",
+        "filmnoir": "Film-Noir",
+        "horror": "Horror",
+        "musical": "Musical",
+        "mystery": "Mystery",
+        "romance": "Romance",
+        "sci_fi": "Sci-Fi",
+        "thriller": "Thriller",
+        "western": "Western",
+        "war": "War",
+        "m": "m", 
+        "f": "f"
     }
-    
-    possible_genres = {
-        "Action": "action",
-        "Adventure": "adventure",
-        "Animation": "animation",
-        "Children's": "childrens",
-        "Comedy": "comedy",
-        "Crime": "crime",
-        "Documentary": "documentary",
-        "Drama": "drama",
-        "Fantasy": "fantasy",
-        "Film-Noir": "filmnoir",
-        "Horror": "horror",
-        "Musical": "musical",
-        "Mystery": "mystery",
-        "Romance": "romance",
-        "Sci-Fi": "sci_fi",
-        "Thriller": "thriller",
-        "Western": "western",
-        "War": "war"
-    }
-    
-    possible_genders = ["m", "f"]
 
     def __init__(self, product_registry: ProductRegistry, user_registry: UserRegistry, rating_registry: RatingRegistry, seed=42):
         super().__init__(product_registry, user_registry, rating_registry)
-        random.seed(seed)
+        clauses_path = "./ilp_movie_recommendation/learned_clauses.txt"
+        rules = []
+        with open(clauses_path, 'r') as f:
+            for line in f.readlines():
+                rule = line.split(' :- ')[-1].strip()
+                atoms = rule[:-1].split(', ')
+                conditions = {'user': [], 'product': []}
+                for atom in atoms:
+                    if '(A,B)' in atom:
+                        print("todo, handle atoms on both user and product")
+                    elif '(A)' in atom:
+                        conditions["user"].append(self.clauses_dic[atom[:-3]])
+                    elif '(B)' in atom:
+                        conditions["product"].append(self.clauses_dic[atom[:-3]])
+                    else:
+                        print('unrecognized atom:', atom)
+                rules.append(conditions)
+        print('rules', rules)
+        self.clauses = rules
 
     def recommend(self, target_user: User) -> List[RecoPath]:
-        file_path = 'prolog_partitions_six/prolog_program_partition_5.pl'
-        new_user_id = "u"+str(target_user.uid)
-        new_user_age = self.possible_ages[str(target_user.age)]
+        new_user_id = str(target_user.uid)
+        new_user_age = str(target_user.age)
         new_user_gender = target_user.gender
-        #new_movie_id = "m777"
-        #user_movie_genre = "action"
-        rating_movie = add_new_user_to_existing_program(file_path, new_user_id, new_user_age, new_user_gender, new_movie_id, user_movie_genre, rating_movie)# Charger le programme Prolog avec les nouvelles données
-        ap = AndanteProgram.build_from(file_path)# Définir les paramètres pour l'inférence
-        ap.set('verbose', 1)
-        ap.set('h', 100)# Générer les règles si elles ne sont pas déjà générées
-        induced_rules = ap.induce(update_knowledge=True, logging=True, verbose=0)# Recommander un film pour le nouvel utilisateur
-        result, df = ap.query(f"recommend({new_user_id}, Movie).")# Afficher les recommandations
-        if result:
-            print(f"Recommandations pour {new_user_id}:")
-            print(df)
-        else:
-            print(f"Aucune recommandation trouvée pour {new_user_id}.")
-        # TODO This process need some optimization... ^^
+        user_char = [new_user_id, new_user_age, new_user_gender]
+        recomm = {}
+        for product in self.product_registry.products:
+            nodes = []
+            rels = []
+            for clause in self.clauses:
+                if clause['user'] in user_char or product.genre in clause['product']:
+                    nodes.append(RecoNode())
+            recomm[product.eid] = cnt_match
+        
+                
+        """ # TODO This process need some optimization... ^^
         #1: gather target_user's ratings
         user_ratings = self.rating_registry.find_user_ratings(target_user.uid)
         user_product_pid_set = { rating.product.pid for rating in user_ratings }
@@ -115,4 +128,22 @@ class RandomRecommender(AbstractRecommender):
             reco_path.rels.append(reco_rel)
 
         #TODO return more than a single recommendation
-        return [reco_path]
+        return [reco_path] """
+
+if __name__ == "__main__":
+    from models.csv_loader import CSVLoader
+    from models.products.product_registry import ProductRegistry
+    from models.products.product_mapping_row import ProductMappingRow
+    from models.products.product_row import ProductRow
+    product_registry = ProductRegistry(CSVLoader(ProductRow).read(), CSVLoader(ProductMappingRow).read())
+    from models.users.user_registry import UserRegistry
+    from models.users.user_mapping_row import UserMappingRow
+    from models.users.user_row import UserRow
+    user_registry = UserRegistry(CSVLoader(UserRow).read(), CSVLoader(UserMappingRow).read())
+    from models.ratings.rating_registry import RatingRegistry
+    from models.ratings.rating_row import RatingRow
+    rating_registry = RatingRegistry(CSVLoader(RatingRow).read(), user_registry, product_registry)
+    
+    rec = ILPRecommender(product_registry, user_registry, rating_registry)
+    new_user = User(0, 0, 'm', '56+')
+    rec.recommend(new_user)
