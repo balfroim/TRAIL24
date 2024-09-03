@@ -20,7 +20,9 @@ async function genericApiCall(endpoint, query_params, method, data) {
 
   const response = await fetch(url, options);
   console.log(response);
-  if (endpoint === "rate") {
+  if (!response.ok) {
+    throw new Error("API error");
+  } else if (endpoint === "rate") {
     return true
   } else {
     return await response.json()

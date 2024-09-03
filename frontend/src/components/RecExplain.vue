@@ -28,13 +28,21 @@ export default {
   methods: {
     async getRecommendation() {
       this.loading = true;
-      this.recommended_products = await getRecommendationsApiCall(this.userId);
-      this.recommended_products.map((product) => this.explanations[product.pid] = "");
+      try {
+        this.recommended_products = await getRecommendationsApiCall(this.userId);
+        this.recommended_products.map((product) => this.explanations[product.pid] = "");
+      } catch (e) {
+        console.log(e);
+      }
       this.loading = false;
     },
     async getExplanation(productId) {
       this.loading = true;
-      this.explanations[productId] = await getExplanationApiCall(this.userId, productId);
+      try {
+        this.explanations[productId] = await getExplanationApiCall(this.userId, productId);
+      } catch (e) {
+        console.log(e);
+      }
       this.loading = false;
     }
   },

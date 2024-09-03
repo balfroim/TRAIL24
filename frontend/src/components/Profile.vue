@@ -48,9 +48,14 @@ export default {
         gender_cat: this.gender_cat,
         age_cat: this.age_cat
       }
-      const userId = await setProfile(data);
+      try {
+        const userId = await setProfile(data);
+        this.$emit("set-profile", userId);
+      } catch (e) {
+        console.log(e)
+      }
       this.loading = false;
-      this.$emit("set-profile", userId);
+
     }
   }
 }

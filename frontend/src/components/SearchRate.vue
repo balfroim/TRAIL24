@@ -79,7 +79,11 @@ export default {
         const data = {
           value: this.searchQuery
         }
-        this.searchResults = await searchApiCall(data);
+        try {
+          this.searchResults = await searchApiCall(data);
+        } catch (e) {
+          console.log(e);
+        }
       }
       this.loading = false;
     },
@@ -94,14 +98,22 @@ export default {
         product_id: this.selectedPid,
         value: this.ratingValue
       };
-      await addRateApiCall(ratingData, this.userId);
+      try {
+        await addRateApiCall(ratingData, this.userId);
+      } catch (e) {
+        console.log(e);
+      }
       this.loading = false;
     },
     async deleteRating(productId) {
       this.loading = true;
       const ratingIndex = this.ratings.findIndex((rating) => rating.productId === productId);
       this.ratings.splice(ratingIndex, 1);
-      await deleteRateApiCall(this.userId, productId);
+      try {
+        await deleteRateApiCall(this.userId, productId);
+      } catch (e) {
+        console.log(e);
+      }
       this.loading = false;
     },
     switchToRec() {
