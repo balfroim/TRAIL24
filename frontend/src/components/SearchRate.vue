@@ -1,93 +1,115 @@
 <template>
-  <h1>Search & Rate ({{ userId }})</h1>
-
-  <div class="card">
-    <form @submit.prevent="searchProduct">
-      <div>
-        <label for="search_query">Search for a movie:</label><br>
-        <input type="text" id="search_query" name="search_query" v-model="searchQuery">
-      </div>
-      <div>
-        <input type="submit" value="Submit">
-      </div>
-    </form>
+  <h1 class="page-title">Almost there...</h1>
+  <p class="page-info">
+    To personalize your experience with Movielens, we would like to
+    know your favorite movies. <br><span class="colored-text">Please provide the titles
+    of 5 of your favourite movies</span> (the order does not matter).
+  </p>
+  <div v-if="loading">
+    <span class="loader"></span>
   </div>
+  <div v-else>
+    <div>
+      <h2>Current Ratings</h2>
+      <p v-if="ratings.length">
+        <ul>
+          <li v-for="rating in ratings" :key="rating.productId">
+            {{ rating.productName }} ({{ rating.value }})
+            <button @click="deleteRating(rating.productId)">X</button>
+          </li>
+        </ul>
+      </p>
+      <p v-else>No Rating</p>
+    </div>
 
-  <div class="card">
-    <form @submit.prevent="rateProduct">
-      <div>
-        <label for="select_product">Select a movie:</label><br>
-        <select id="select_product" name="select_product" v-model="selectedPid">
-          <option v-for="(name, pid) in this.searchResults" :value="pid" :key="pid">{{ name }}</option>
-        </select>
-      </div>
-      <div>
-        <label for="rating_value">Rate the selected movie:</label><br>
-        <select id="rating_value" name="rating_value" v-model="ratingValue">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
-      </div>
-      <div>
-        <input type="submit" value="Submit" :disabled="!selectedPid">
-      </div>
-    </form>
-  </div>
+    <div>
+      <h2>Search for a movie</h2>
+      <form @submit.prevent="searchProduct">
+          <label for="search_query">Search:</label>
+          <input class="search-input" type="text" id="search_query" name="search_query" placeholder="Movie Title (e.g. The Godfather)" v-model="searchQuery">
+          <input class="search" type="submit" value="Submit">
+      </form>
+    </div>
 
-  <div class="card">
-    <button @click="switchToRec">Recommendation</button>
+    <div>
+      <h2>Like the movie</h2>
+      <form @submit.prevent="rateProduct">
+        <div>
+          <label for="select_product">Select:</label><br>
+          <span v-for="(name, pid) in this.searchResults" :key="pid">
+            <input type="radio" :id="`product${pid}`" name="product" :value="pid" v-model="selectedPid">
+            <label for="`product${pid}`">{{ name }}</label><br>
+          </span>
+        </div>
+        <div>
+          <input type="submit" value="Like!" :disabled="!selectedPid">
+        </div>
+      </form>
+    </div>
+
+    <button class="continue" @click="switchToRec" :disabled="ratings.length === 0">Recommendation</button>
   </div>
 </template>
 
 <script>
+import {addRateApiCall, deleteRateApiCall, searchApiCall} from "../utils.js";
+
 export default {
   props: ['userId'],
   emits: ['switch-to-rec'],
   data() {
     return {
       searchQuery: "",
-      searchResults: [],
+      searchResults: {},
       ratings: [],
       selectedPid: 0,
-      ratingValue: 3
+      ratingValue: 5,
+      loading: false
     }
   },
   methods: {
     async searchProduct() {
+      this.loading = true;
       if (this.searchQuery) {
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        const url = "http://127.0.0.1:8000/search";
         const data = {
           value: this.searchQuery
         }
-        const options = {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: myHeaders,
+        try {
+          this.searchResults = await searchApiCall(data);
+        } catch (e) {
+          console.log(e);
         }
-        const response = await fetch(url, options);
-        this.searchResults = await response.json();
       }
+      this.loading = false;
     },
     async rateProduct() {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      const url = `http://127.0.0.1:8000/rate/${this.userId}`;
-      const data = {
+      this.loading = true;
+      this.ratings.push({
+        productId: this.selectedPid,
+        productName: this.searchResults[this.selectedPid],
+        value: this.ratingValue
+      });
+      const ratingData = {
         product_id: this.selectedPid,
         value: this.ratingValue
+      };
+      try {
+        await addRateApiCall(ratingData, this.userId);
+      } catch (e) {
+        console.log(e);
       }
-      const options = {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: myHeaders,
+      this.loading = false;
+    },
+    async deleteRating(productId) {
+      this.loading = true;
+      const ratingIndex = this.ratings.findIndex((rating) => rating.productId === productId);
+      this.ratings.splice(ratingIndex, 1);
+      try {
+        await deleteRateApiCall(this.userId, productId);
+      } catch (e) {
+        console.log(e);
       }
-      const response = await fetch(url, options);
-      console.log(response);
+      this.loading = false;
     },
     switchToRec() {
       this.$emit('switch-to-rec');

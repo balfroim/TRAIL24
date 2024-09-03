@@ -45,3 +45,11 @@ class RatingRegistry:
         self.__product_rating_dict[rating_data.product.pid].append(new_rating)
 
         return new_rating
+
+    def delete_rating(self, user_id: int, product_id: int) -> None:
+        rating_to_delete = self.find_user_product_rating(user_id, product_id)
+        self.ratings.remove(rating_to_delete)
+        self.__user_rating_dict[user_id].remove(rating_to_delete)
+        self.__product_rating_dict[product_id].remove(rating_to_delete)
+
+        return None

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="page-content">
     <Profile v-if="content==='profile'" @set-profile="setProfile" />
     <SearchRate v-if="content==='search_rate'" :user-id="userId" @switch-to-rec="switchToRec"/>
 <!-- @recommend="content = 'rec_explain'" -->
@@ -26,8 +26,6 @@ export default {
   },
   methods: {
     async setProfile(userId) {
-      console.log('coucou ' + userId);
-      console.log(this.userId);
       this.userId = userId;
       console.log(this.userId);
       this.content = "search_rate";
@@ -39,17 +37,19 @@ export default {
 }
 </script>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<!--<style scoped>-->
+<!--.profile {-->
+<!--  background-image: url("../public/background.jpg");-->
+<!--  background-size: 100%;-->
+<!--}-->
+
+<!--.search_rate {-->
+<!--  background-image: url("../public/background-2.jpg");-->
+<!--  background-size: 100%;-->
+<!--}-->
+
+<!--.rec_explain {-->
+<!--  background-image: url("../public/background-3.jpg");-->
+<!--  background-size: 105%;-->
+<!--}-->
+<!--</style>-->
