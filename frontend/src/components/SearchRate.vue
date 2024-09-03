@@ -1,58 +1,53 @@
 <template>
-  <h1>Search & Rate ({{ userId }})</h1>
+  <h1 class="page-title">Almost there...</h1>
+  <p class="page-info">
+    To personnalize your experience with Movielens, we would like to
+    know your favorite movies. <br><colored-text>Please provide the titles
+    of 5 of your favourite movies</colored-text> (the order does not matter).
+  </p>
   <div v-if="loading">
     <span class="loader"></span>
   </div>
   <div v-else>
     <div>
-      <ul v-if="ratings.length">
-        <li v-for="rating in ratings" :key="rating.productId">
-          {{ rating.productName }} ({{ rating.value }})
-          <button @click="deleteRating(rating.productId)">X</button>
-        </li>
-      </ul>
+      <h2>Current Ratings</h2>
+      <p v-if="ratings.length">
+        <ul>
+          <li v-for="rating in ratings" :key="rating.productId">
+            {{ rating.productName }} ({{ rating.value }})
+            <button @click="deleteRating(rating.productId)">X</button>
+          </li>
+        </ul>
+      </p>
       <p v-else>No Rating</p>
     </div>
 
-    <div class="card">
+    <div>
+      <h2>Search for a movie</h2>
       <form @submit.prevent="searchProduct">
-        <div>
-          <label for="search_query">Search for a movie:</label><br>
-          <input type="text" id="search_query" name="search_query" v-model="searchQuery">
-        </div>
-        <div>
-          <input type="submit" value="Submit">
-        </div>
+          <label for="search_query">Search:</label>
+          <input class="search-input" type="text" id="search_query" name="search_query" placeholder="Movie Title (e.g. The Godfather)" v-model="searchQuery">
+          <input class="search" type="submit" value="Submit">
       </form>
     </div>
 
-    <div class="card">
+    <div>
+      <h2>Like the movie</h2>
       <form @submit.prevent="rateProduct">
         <div>
-          <label for="select_product">Select a movie:</label><br>
-          <select id="select_product" name="select_product" v-model="selectedPid">
-            <option v-for="(name, pid) in this.searchResults" :value="pid" :key="pid">{{ name }}</option>
-          </select>
+          <label for="select_product">Select:</label><br>
+          <span v-for="(name, pid) in this.searchResults" :key="pid">
+            <input type="radio" :id="`product${pid}`" name="product" :value="pid" v-model="selectedPid">
+            <label for="`product${pid}`">{{ name }}</label><br>
+          </span>
         </div>
         <div>
-          <label for="rating_value">Rate the selected movie:</label><br>
-          <select id="rating_value" name="rating_value" v-model="ratingValue">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-        </div>
-        <div>
-          <input type="submit" value="Submit" :disabled="!selectedPid">
+          <input type="submit" value="Like!" :disabled="!selectedPid">
         </div>
       </form>
     </div>
 
-    <div class="card">
-      <button @click="switchToRec">Recommendation</button>
-    </div>
+    <button class="continue" @click="switchToRec" :disabled="ratings.length === 0">Recommendation</button>
   </div>
 </template>
 
@@ -68,7 +63,7 @@ export default {
       searchResults: {},
       ratings: [],
       selectedPid: 0,
-      ratingValue: 3,
+      ratingValue: 5,
       loading: false
     }
   },

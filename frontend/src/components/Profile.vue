@@ -1,19 +1,28 @@
 <template>
-  <h1>Set Profile</h1>
+  <h1 class="page-title">
+    Welcome to <colored-text> Movielens </colored-text>!
+  </h1>
+  <h2 class="page-info">Let's start by setting up your profile</h2>
   <div v-if="loading">
     <span class="loader"></span>
   </div>
   <form v-else @submit.prevent="setProfile">
-    <div class="card">
-      <label for="gender_cat">Gender:</label><br>
-      <select id="gender_cat" name="gender_cat" v-model="gender_cat">
+    <div class="prompt-input">
+      <label class="prompt" for="name">What is your name?</label><br>
+      <input type="text" id="name" name="name" placeholder="Name (e.g. John Doe)" required>
+    </div>
+    <div class="prompt-input">
+      <label class="prompt" for="gender_cat">Gender:</label><br>
+      <select id="gender_cat" name="gender_cat" v-model="gender_cat" required>
         <option value="F">Female</option>
         <option value="M">Male</option>
+        <option value="O">Other</option>
+        <option value="P">Prefer not to specify</option>
       </select>
     </div>
-    <div class="card">
-      <label for="age_cat">Age Category:</label><br>
-      <select id="age_cat" name="age_cat" v-model="age_cat">
+    <div class="prompt-input">
+      <label class="prompt" for="age_cat">Age Category:</label><br>
+      <select id="age_cat" name="age_cat" v-model="age_cat" required>
         <option value="Under 18">Under 18</option>
         <option value="18-24">18-24</option>
         <option value="25-34">25-34</option>
@@ -23,9 +32,7 @@
         <option value="56+">35-44</option>
       </select>
     </div>
-    <div class="card">
-      <input type="submit" value="Submit">
-    </div>
+    <input class="continue" type="submit" value="Submit & Continue">
   </form>
 </template>
 
@@ -60,9 +67,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
