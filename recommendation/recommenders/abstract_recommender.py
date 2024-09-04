@@ -20,11 +20,12 @@ class AbstractRecommender(ABC):
         self.rating_registry = rating_registry
 
     @abstractmethod
-    def recommend(self, target_user: User) -> List[RecoPath]:
+    def recommend(self, target_user: User, k: int) -> List[RecoPath]:
         """
         Generate recommendation paths for a target user.
 
         :param target_user: User target user for recommendation.
+        :param k: Number of recommendations.
         :return: List[RecoPath] list of recommendation paths.
         """
         pass

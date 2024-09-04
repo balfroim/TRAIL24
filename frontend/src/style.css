@@ -127,6 +127,7 @@ input, select {
 .horizontal-list-elem {
   width: 20%;
   float: left;
+  padding-bottom: 10px;
 }
 
 .horizontal-list-3elem {

@@ -20,6 +20,7 @@
         </ul>
       </p>
       <p v-else>No Rating</p>
+      <button class="continue" @click="switchToRec" :disabled="ratings.length === 0">Get Recommendations</button>
     </div>
 
     <div>
@@ -33,21 +34,17 @@
 
     <div>
       <h2>Like the movie</h2>
-      <form @submit.prevent="rateProduct">
-        <div>
-          <label for="select_product">Select:</label><br>
-          <span v-for="(name, pid) in this.searchResults" :key="pid">
-            <input type="radio" :id="`product${pid}`" name="product" :value="pid" v-model="selectedPid">
-            <label for="`product${pid}`">{{ name }}</label><br>
-          </span>
+      <div v-if="isSearchResults" class="horizontal-list">
+        <div v-for="(name, pid) in searchResults" class="horizontal-list-elem" :key="pid">
+          <img class="movie-poster" :src="getPosterUrl(pid)" :alt="name">
+          <p>{{ name }}</p>
+          <button type="button" class="btn" @click="addRating(pid)">
+            Like!
+          </button>
         </div>
-        <div>
-          <input type="submit" value="Like!" :disabled="!selectedPid">
-        </div>
-      </form>
+      </div>
+      <p v-else>No Result</p>
     </div>
-
-    <button class="continue" @click="switchToRec" :disabled="ratings.length === 0">Recommendation</button>
   </div>
 </template>
 
@@ -67,6 +64,11 @@ export default {
       loading: false
     }
   },
+  computed: {
+    isSearchResults() {
+      return Object.keys(this.searchResults).length;
+    }
+  },
   methods: {
     async searchProduct() {
       this.loading = true;
@@ -82,21 +84,23 @@ export default {
       }
       this.loading = false;
     },
-    async rateProduct() {
+    async addRating(productId) {
       this.loading = true;
-      this.ratings.push({
-        productId: this.selectedPid,
-        productName: this.searchResults[this.selectedPid],
-        value: this.ratingValue
-      });
-      const ratingData = {
-        product_id: this.selectedPid,
-        value: this.ratingValue
-      };
-      try {
-        await addRateApiCall(ratingData, this.userId);
-      } catch (e) {
-        console.log(e);
+      if (!this.ratings.some((rating) => rating.productId === productId)) {
+        this.ratings.push({
+          productId: productId,
+          productName: this.searchResults[productId],
+          value: this.ratingValue
+        });
+        const ratingData = {
+          product_id: productId,
+          value: this.ratingValue
+        };
+        try {
+          await addRateApiCall(ratingData, this.userId);
+        } catch (e) {
+          console.log(e);
+        }
       }
       this.loading = false;
     },
@@ -111,15 +115,18 @@ export default {
       }
       this.loading = false;
     },
+    getPosterUrl(productId) {
+      return `http://localhost:8000/poster/${productId}`;
+      // const isPosterAvailable = await getPosterApiCall(productId);
+      // if (isPosterAvailable) {
+      //   return `http://localhost:8000/poster/${productId}`;
+      // } else {
+      //   return "../../public/sample-poster-1x.jpeg";
+      // }
+    },
     switchToRec() {
       this.$emit('switch-to-rec');
     }
   }
 }
 </script>
-
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
