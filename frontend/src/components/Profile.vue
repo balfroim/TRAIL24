@@ -27,9 +27,9 @@
         <option value="18-24">18-24</option>
         <option value="25-34">25-34</option>
         <option value="35-44">35-44</option>
-        <option value="45-49">35-44</option>
-        <option value="50-55">35-44</option>
-        <option value="56+">35-44</option>
+        <option value="45-49">45-49</option>
+        <option value="50-55">50-55</option>
+        <option value="56+">56+</option>
       </select>
     </div>
     <input class="continue" type="submit" value="Submit & Continue">
