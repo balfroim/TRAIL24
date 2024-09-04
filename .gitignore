@@ -19,3 +19,5 @@ notebooks/
 *.zip
 
 Mi*tral*/
+
+.DS_Store
