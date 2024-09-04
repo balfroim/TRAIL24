@@ -6,3 +6,4 @@ class RatingRow:
     uid: int
     pid: int
     rating: float
+    timestamp: int
