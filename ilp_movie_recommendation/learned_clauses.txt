@@ -1,0 +1,6 @@
+recommend(A, B) :- b45to49(A).
+recommend(A, B) :- b18to24(A), drama(B).
+recommend(A, B) :- crime(B).
+recommend(A, B) :- horror(B).
+recommend(A, B) :- b25to34(A), f(A).
+recommend(A, B) :- adventure(B).
