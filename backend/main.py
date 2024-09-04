@@ -16,15 +16,17 @@ from models.users.user import User
 from models.users.user_mapping_row import UserMappingRow
 from models.users.user_registry import UserRegistry
 from models.users.user_row import UserRow
+from recommendation.recommenders.personalized_pagerank_recommender import PersonalizedPageRankRecommender
 from recommendation.recommenders.random_recommender import RandomRecommender
 
 product_registry = ProductRegistry(CSVLoader(ProductRow).read(), CSVLoader(ProductMappingRow).read())
 user_registry = UserRegistry(CSVLoader(UserRow).read(), CSVLoader(UserMappingRow).read())
 rating_registry = RatingRegistry(CSVLoader(RatingRow).read(), user_registry, product_registry)
 
-recommender = RandomRecommender(product_registry, user_registry, rating_registry)
+# recommender = RandomRecommender(product_registry, user_registry, rating_registry)
+recommender = PersonalizedPageRankRecommender(product_registry, user_registry, rating_registry)
 
-explainer = init_cot_explainer(product_registry, user_registry, rating_registry)
+# explainer = init_cot_explainer(product_registry, user_registry, rating_registry)
 
 # TODO cache recommendation paths to generate explanations
 user_reco_path_dict = {}
