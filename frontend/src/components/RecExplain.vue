@@ -9,9 +9,9 @@
     <span class="loader"></span>
   </div>
   <div v-else class="horizontal-list">
-    <div v-for="product in recommended_products" class="horizontal-list-3elem" :key="product.pid">
+    <div v-for="product in recommended_products" class="horizontal-list-elem" :key="product.pid">
       <div class="photo-container">
-        <img class="movie-poster" src="../../public/sample-poster.jpeg" :alt="product.name">
+        <img class="movie-poster" :src="getPosterUrl(product.pid)" :alt="product.name">
         <p>{{ product.name }}</p>
         <button type="button" class="btn" @click="showExplanation(product.pid)">
           Explain
@@ -83,6 +83,9 @@ export default {
       }
       this.activeExplanationPid = productId;
       this.isModalVisible = true;
+    },
+    getPosterUrl(productId) {
+      return `http://localhost:8000/poster/${productId}`;
     },
     hideExplanation() {
       this.isModalVisible = false;
