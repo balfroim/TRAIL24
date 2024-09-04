@@ -4,7 +4,7 @@ from models.reco.reco_node import RecoNode
 from models.reco.reco_path import RecoPath
 from models.reco.reco_rel import RecoRel
 from recommendation.registry_handler import RegistryHandler
-
+from itertools import tee
 
 class FactCollector:
     """
@@ -38,7 +38,30 @@ class FactCollector:
             facts.extend(product.facts())
         return facts
 
-    def filter_facts(self, facts: List[Fact], filter_facts: Optional[List[str]]) -> List[Fact]:
-        if filter_facts:
-            return [f for f in facts if f.predicate not in filter_facts]
-        return facts
+    def exclude_facts(self, facts: List[Fact], exclude_predicates: List[str]) -> tuple[List[Fact], List[Fact]]:
+        """
+        Splits the facts into two lists based on the predicate.
+        
+        :param facts: List of Fact objects.
+        :param exclude_predicates: List of predicates to exclude.
+        :return: Tuple of two lists:
+                    - first: List of facts that are not excluded.
+                    - second: List of facts that are excluded.
+        
+        Example:
+        --------
+        facts = [Fact("name", ("user1", "John")), Fact("age", ("user1", "25"))]
+        exclude_predicates = ["name"]
+        result = ([Fact("age", ("user1", "25"))], [Fact("name", ("user1", "John"))])
+        """
+        # Duplicate the facts iterator for two independent iterations
+        included_iter, excluded_iter = tee(facts)
+        
+        def is_excluded(fact: Fact) -> bool:
+            """Helper function to check if a fact's predicate should be excluded."""
+            return fact.predicate in exclude_predicates
+        
+        is_included = lambda fact: not is_excluded(fact)
+        included_facts = list(filter(is_included, included_iter))
+        excluded_facts = list(filter(is_excluded, excluded_iter))
+        return included_facts, excluded_facts
