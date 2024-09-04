@@ -126,7 +126,7 @@ async def get_recommendation(user_id: int):
         reco_product = product_registry.find_by_eid(reco_path.nodes[-1].entity_id)
         products.append(reco_product)
         recommendations[reco_product.pid] = reco_path
-    user_reco_path_dict[user_id] = recommendations
+    user_recos[user_id] = recommendations
 
     return [
         {
