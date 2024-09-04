@@ -41,8 +41,8 @@ recommender = RandomRecommender(product_registry, user_registry, rating_registry
 
 # TODO: load llm explainer
 # explainer = LLMExplainer(registry_handler, chain)
-# explainer = init_llm_explainer(registry_handler)
-explainer = init_llm_explainer_self_hosted(registry_handler)
+explainer = init_llm_explainer(registry_handler)
+# explainer = init_llm_explainer_self_hosted(registry_handler)
 # explainer = init_cot_explainer(product_registry, user_registry, rating_registry)
 
 # load recommendations paths
