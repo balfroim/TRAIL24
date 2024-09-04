@@ -1,7 +1,10 @@
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
+from backend.init_functions import init_cot_explainer
+from backend.metadata_functions import get_poster_path_from_pid, get_abstract_from_pid
 from models.csv_loader import CSVLoader
 from models.products.product_mapping_row import ProductMappingRow
 from models.products.product_registry import ProductRegistry
@@ -13,7 +16,6 @@ from models.users.user import User
 from models.users.user_mapping_row import UserMappingRow
 from models.users.user_registry import UserRegistry
 from models.users.user_row import UserRow
-from recommendation.explainers.llm_explainer import LLMExplainer
 from recommendation.recommenders.random_recommender import RandomRecommender
 
 product_registry = ProductRegistry(CSVLoader(ProductRow).read(), CSVLoader(ProductMappingRow).read())
@@ -22,11 +24,7 @@ rating_registry = RatingRegistry(CSVLoader(RatingRow).read(), user_registry, pro
 
 recommender = RandomRecommender(product_registry, user_registry, rating_registry)
 
-# repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-repo_id = "meta-llama/Meta-Llama-3-8B-Instruct"
-# repo_id = "google/gemma-7b"
-# repo_id = "mistralai/Mistral-7B-Instruct-v0.2"
-explainer = LLMExplainer(product_registry, user_registry, rating_registry, repo_id)
+explainer = init_cot_explainer(product_registry, user_registry, rating_registry)
 
 # TODO cache recommendation paths to generate explanations
 user_reco_path_dict = {}
@@ -102,7 +100,7 @@ def delete_rating(user_id: int, product_id: int):
 @app.get("/rec/{user_id}")
 async def get_recommendation(user_id: int):
     user = user_registry.find_by_uid(user_id)
-    reco_paths = recommender.recommend(user)
+    reco_paths = recommender.recommend(user, 9)
     recommendations = {}
     products = []
     for reco_path in reco_paths:
@@ -121,8 +119,20 @@ async def get_recommendation(user_id: int):
     ]
 
 @app.get("/explain/{user_id}/{product_id}")
-async def get_explanation(user_id: int, product_id: int):
+async def get_explanations(user_id: int, product_id: int):
     reco_path = user_reco_path_dict[user_id][product_id]
-    explanation = explainer.explain(reco_path)
+    # TODO need to debug explainer (see with Martin)
+    # explanation_with_facts = explainer.explain(reco_path)
+    explanation_with_facts = "Dummy Explanation with facts"
+    explanation_without_facts = "Dummy Explanation without facts"
 
-    return explanation
+    return [explanation_with_facts, explanation_without_facts]
+
+@app.get("/poster/{product_id}")
+async def get_poster(product_id: int):
+    path = get_poster_path_from_pid(product_id)
+    return FileResponse(path)
+
+@app.get("/abstract/{product_id}")
+async def get_abstract(product_id: int):
+    return get_abstract_from_pid(product_id)

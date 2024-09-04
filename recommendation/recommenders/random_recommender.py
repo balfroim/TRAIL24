@@ -20,7 +20,7 @@ class RandomRecommender(AbstractRecommender):
         super().__init__(product_registry, user_registry, rating_registry)
         random.seed(seed)
 
-    def recommend(self, target_user: User) -> List[RecoPath]:
+    def recommend(self, target_user: User, k=1) -> List[RecoPath]:
         #1: gather target_user's ratings
         user_product_pid_set = {
             rating.product.pid
@@ -54,11 +54,14 @@ class RandomRecommender(AbstractRecommender):
             if path[-1] not in user_product_pid_set
         ]
 
-        #5: select one at random
-        recommended_rating_path = random.choice(filtered_complete_rating_paths)
+        #5: select 9 paths at random
+        if len(filtered_complete_rating_paths) > k:
+            recommended_rating_paths = random.sample(filtered_complete_rating_paths, k)
+        else:
+            recommended_rating_paths = filtered_complete_rating_paths
 
         #6: build reco path and return
-        return [self.__build_reco_path(recommended_rating_path)]
+        return [self.__build_reco_path(path) for path in recommended_rating_paths]
 
     def __build_reco_path(self, node_list: List[int]) -> RecoPath:
         reco_path = RecoPath([], [])
