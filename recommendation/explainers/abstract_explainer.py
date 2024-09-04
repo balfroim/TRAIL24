@@ -8,7 +8,10 @@ from models.nodes.fact import Fact
 from models.products.product_registry import ProductRegistry
 from models.ratings.rating_registry import RatingRegistry
 from models.reco.reco_path import RecoPath
+from models.users import user
 from models.users.user_registry import UserRegistry
+from recommendation.facts.fact_collector import FactCollector
+from recommendation.registry_handler import RegistryHandler
 
 
 class AbstractExplainer(ABC):
@@ -17,45 +20,25 @@ class AbstractExplainer(ABC):
     """
 
     @abstractmethod
-    def __init__(self, product_registry: ProductRegistry, user_registry: UserRegistry, rating_registry: RatingRegistry):
-        self.product_registry = product_registry
-        self.user_registry = user_registry
-        self.rating_registry = rating_registry
+    def __init__(self, registry_handler: RegistryHandler):
+        self.registry_handler = registry_handler
+        self.fact_collector = FactCollector(registry_handler)
 
     @abstractmethod
     def explain(self, path: RecoPath, filter_facts: Optional[List[str]]=None) -> str:
         """
-        Generate explanation for o recommendation path.
+        Generate explanation for a recommendation path.
 
         :param path: RecoPath.
         :return: str explanation.
         """
         raise NotImplementedError
-
-    def collect_facts(self, path: RecoPath) -> List[Fact]:
-        facts = []
-        for rel in path.rels:
-            facts.extend(rel.facts())
-            user = self.user_registry.find_by_eid(rel.in_node.entity_id)
-            product = self.product_registry.find_by_eid(rel.out_node.entity_id)
-            rating = self.rating_registry.find_user_product_rating(user.uid, product.pid)
-            facts.extend(rating.facts())
-        for node in path.nodes:
-            if node.type == "user":
-                user = self.user_registry.find_by_eid(node.entity_id)
-                facts.extend(user.facts())
-            elif node.type == "product":
-                product = self.product_registry.find_by_eid(node.entity_id)
-                facts.extend(product.facts())
-        return facts
     
-    def _prepare_input(self, path, filter_facts:Optional[List[str]]=None):
-        facts = self.collect_facts(path)
-        if filter_facts:
-            facts = [f for f in facts if f.predicate not in filter_facts]
-        bk = "\n".join([str(f) for f in facts])
-        product_eid = path.recommendation[1].entity_id
-        product = self.product_registry.find_by_eid(product_eid)
-        user_eid = path.recommendation[0].entity_id
-        user = self.user_registry.find_by_eid(user_eid)
-        return bk,product,user
+    def _prepare_input(self, path: RecoPath, filter_facts:Optional[List[str]]=None):
+        facts = self.fact_collector.collect_facts_from_path(path)
+        filtered_facts = self.fact_collector.filter_facts(facts, filter_facts)
+        context = "\n".join([str(f) for f in filtered_facts])
+        product, user = self.registry_handler.get_product_and_user(path)
+        # product = str(self.registry_handler.find_product_by_eid(path.recommendation[1].entity_id))
+        # user = str(self.registry_handler.find_user_by_eid(path.recommendation[0].entity_id))
+        return context, str(product), str(user)
