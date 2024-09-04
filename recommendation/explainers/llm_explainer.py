@@ -8,6 +8,7 @@ from recommendation.explainers.traces.trance_handler import TraceHandler
 from recommendation.registry_handler import RegistryHandler
 
 
+
 class LLMExplainer(AbstractExplainer):
     def __init__(
             self,
@@ -26,4 +27,3 @@ class LLMExplainer(AbstractExplainer):
             "product": product
         }, config={"callbacks": [trace_handler]})
         return completion, trace_handler.get_traces()[0]
-
