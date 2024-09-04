@@ -34,9 +34,4 @@ class AbstractExplainer(ABC):
         """
         raise NotImplementedError
     
-    def _prepare_input(self, path: RecoPath, filter_facts:Optional[List[str]]=None):
-        facts = self.fact_collector.collect_facts_from_path(path)
-        filtered_facts = self.fact_collector.filter_facts(facts, filter_facts)
-        context = "\n".join([str(f) for f in filtered_facts])
-        product, user = self.registry_handler.get_product_and_user(path)
-        return context, str(product), str(user)
+    
