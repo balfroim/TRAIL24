@@ -141,10 +141,9 @@ def extract_recommendation_path(pid_list, gender='M', age='25-34', number_of_pat
     # Load existing users and ratings data
     users = pd.read_csv(f'{path_to_data}/init_users.txt', sep='\t', names=['uid', 'gender', 'age'])
     ratings = pd.read_csv(f'{path_to_data}/init_ratings.txt', sep='\t', names=['uid', 'pid', 'rating', 'timestamp'])
-    kg_final = pd.read_csv(f'{path_to_data}/kg_final.txt', sep='\t', names=['entity_head', 'relation', 'entity_tail'])
 
     # Add the new user data and overwrite the path
-    users, ratings = add_new_user_data(new_user_info, new_user_ratings, users, ratings, path_to_data)#, kg_final)
+    users, ratings = add_new_user_data(new_user_info, new_user_ratings, users, ratings, path_to_data)
 
     # Change to the directory and run the first script
     os.chdir(path_to_transe)
