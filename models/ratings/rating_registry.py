@@ -5,7 +5,6 @@ from models.ratings.rating_factory import RatingFactory
 from models.ratings.rating_row import RatingRow
 from models.users.user_registry import UserRegistry
 
-
 class RatingRegistry:
     def __init__(self, ratings: List[RatingRow], user_registry: UserRegistry, product_registry: ProductRegistry):
         self.ratings: List[Rating] = RatingFactory().create_ratings(ratings, user_registry, product_registry)
@@ -34,6 +33,7 @@ class RatingRegistry:
             user=rating_data.user,
             product=rating_data.product,
             rating=rating_data.rating,
+            timestamp=rating_data.timestamp
         )
         self.ratings.append(new_rating)
 
