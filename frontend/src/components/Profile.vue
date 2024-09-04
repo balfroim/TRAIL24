@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import {setProfile} from "../utils.js";
+import {setProfileApiCall} from "../utils.js";
 
 export default {
   emits: ["set-profile"],
@@ -56,7 +56,7 @@ export default {
         age_cat: this.age_cat
       }
       try {
-        const userId = await setProfile(data);
+        const userId = await setProfileApiCall(data);
         this.$emit("set-profile", userId);
       } catch (e) {
         console.log(e)
