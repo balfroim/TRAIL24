@@ -39,6 +39,4 @@ class AbstractExplainer(ABC):
         filtered_facts = self.fact_collector.filter_facts(facts, filter_facts)
         context = "\n".join([str(f) for f in filtered_facts])
         product, user = self.registry_handler.get_product_and_user(path)
-        # product = str(self.registry_handler.find_product_by_eid(path.recommendation[1].entity_id))
-        # user = str(self.registry_handler.find_user_by_eid(path.recommendation[0].entity_id))
         return context, str(product), str(user)
