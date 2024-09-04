@@ -19,17 +19,11 @@ class LLMExplainer(AbstractExplainer):
         super().__init__(registry_handler)
         self.__llm_chain = llm_chain
 
-    # def __prepare_context(self, path: RecoPath, filter_facts:Optional[List[str]]=None):
-    #     facts = self.fact_collector.collect_facts_from_path(path)
-    #     # filtered_facts = self.fact_collector.filter_facts(facts, filter_facts)
-    #     return "\n".join([str(f) for f in filtered_facts])
-
     def __clean_product_name(self, text: str, name_facts: List[Fact]) -> str: 
         assert all([fact.predicate == "name" for fact in name_facts])
         for fact in name_facts:
             text = re.sub(fact.values[0], f"\"{fact.values[1]}\"", text)
         return text
-            # text = re.sub(fact.values[0], "product", text)
     
     def explain(self, path: RecoPath, exclude_predicates: Optional[List[str]]=None) -> tuple[str, LLMTrace]:
         if exclude_predicates is None:
@@ -47,6 +41,5 @@ class LLMExplainer(AbstractExplainer):
         if "name" in exclude_predicates:
             name_facts = [fact for fact in excluded_facts if fact.predicate == "name"]
             completion = self.__clean_product_name(completion, name_facts)
-        # remove all the Product \d+ (sometimes can have ",")
         completion = re.sub(r"Product\s?\d+(,\s?)?", "", completion)
         return completion, trace_handler.get_traces()[0]
