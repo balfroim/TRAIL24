@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from backend.init_functions import init_cot_explainer, init_llm_explainer
+from backend.init_functions import init_cot_explainer, init_llm_explainer, init_llm_explainer_self_hosted
 from backend.metadata_functions import get_poster_path_from_pid, get_abstract_from_pid
 from models.csv_loader import CSVLoader
 from models.products.product_mapping_row import ProductMappingRow
@@ -41,7 +41,8 @@ recommender = RandomRecommender(product_registry, user_registry, rating_registry
 
 # TODO: load llm explainer
 # explainer = LLMExplainer(registry_handler, chain)
-explainer = init_llm_explainer(registry_handler)
+# explainer = init_llm_explainer(registry_handler)
+explainer = init_llm_explainer_self_hosted(registry_handler)
 # explainer = init_cot_explainer(product_registry, user_registry, rating_registry)
 
 # load recommendations paths
