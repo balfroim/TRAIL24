@@ -21,6 +21,7 @@ class LLMExplainer(AbstractExplainer):
 
     def __clean_product_name(self, text: str, name_facts: List[Fact]) -> str: 
         assert all([fact.predicate == "name" for fact in name_facts])
+        print(text)
         for fact in name_facts:
             text = re.sub(fact.values[0], f"\"{fact.values[1]}\"", text)
         return text
@@ -29,7 +30,7 @@ class LLMExplainer(AbstractExplainer):
         if exclude_predicates is None:
             exclude_predicates = []
         facts = self.fact_collector.collect_facts_from_path(path)
-        included_facts, excluded_facts = self.fact_collector.exclude_facts(facts, exclude_predicates)
+        included_facts, _ = self.fact_collector.exclude_facts(facts, exclude_predicates)
         context = "\n".join([str(fact) for fact in included_facts])
         product, user = self.registry_handler.get_product_and_user(path)
         trace_handler = TraceHandler()
@@ -38,8 +39,8 @@ class LLMExplainer(AbstractExplainer):
             "user": str(user),
             "product": str(product)
         }, config={"callbacks": [trace_handler]})
-        if "name" in exclude_predicates:
-            name_facts = [fact for fact in excluded_facts if fact.predicate == "name"]
-            completion = self.__clean_product_name(completion, name_facts)
-        completion = re.sub(r"Product\s?\d+(,\s?)?", "", completion)
+        # if "name" in exclude_predicates:
+        name_facts = [fact for fact in facts if fact.predicate == "name"]
+        completion = self.__clean_product_name(completion, name_facts)
+        # completion = re.sub(r"Product\s?\d+(,\s?)?", "", completion)
         return completion, trace_handler.get_traces()[0]
