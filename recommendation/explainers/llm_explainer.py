@@ -1,51 +1,29 @@
-from dotenv import load_dotenv
-from os import getenv
+import trace
+from typing import List, Optional
 from langchain.chains.llm import LLMChain
-from langchain_community.llms.huggingface_endpoint import HuggingFaceEndpoint
-from langchain_core.prompts import PromptTemplate
-
-from models.products.product_registry import ProductRegistry
-from models.ratings.rating_registry import RatingRegistry
 from models.reco.reco_path import RecoPath
-from models.users.user_registry import UserRegistry
 from recommendation.explainers.abstract_explainer import AbstractExplainer
+from recommendation.explainers.traces.llm_trace import LLMTrace
+from recommendation.explainers.traces.trance_handler import TraceHandler
+from recommendation.registry_handler import RegistryHandler
+
 
 
 class LLMExplainer(AbstractExplainer):
     def __init__(
             self,
-            product_registry: ProductRegistry,
-            user_registry: UserRegistry,
-            rating_registry: RatingRegistry,
-            repo_id: str
+            registry_handler: RegistryHandler,
+            llm_chain: LLMChain
     ):
-        super().__init__(product_registry, user_registry, rating_registry)
-        template = """{background_knowledge}
+        super().__init__(registry_handler)
+        self.__llm_chain = llm_chain
 
-        You are a tooltip explaining to {user} why {product_name} was recommended to them in a paragraph."""
-        prompt = PromptTemplate.from_template(template)
-        load_dotenv()
-        llm = HuggingFaceEndpoint(
-            repo_id=repo_id,
-            **{
-                "max_new_tokens": 512,
-                "top_k": 50,
-                "temperature": 0.1,
-                "repetition_penalty": 1.03,
-                "huggingfacehub_api_token": getenv("HUGGINGFACEHUB_API_TOKEN")
-            },
-        )
-        self.__llm_chain = LLMChain(prompt=prompt, llm=llm)
-
-    def explain(self, path: RecoPath) -> str:
-        bk = self.generate_facts(path)
-        product_eid = path.recommendation[1].entity_id
-        product = self.product_registry.find_by_eid(product_eid)
-        user_eid = path.recommendation[0].entity_id
-        user = self.user_registry.find_by_eid(user_eid)
-        result = self.__llm_chain.invoke({
-            "background_knowledge": bk,
-            "user": str(user),
-            "product_name": product.name
-        })
-        return result["text"]
+    def explain(self, path: RecoPath, filter_facts: Optional[List[str]]=None) -> tuple[str, LLMTrace]:
+        context, product, user = self._prepare_input(path, filter_facts)
+        trace_handler = TraceHandler()
+        completion = self.__llm_chain.invoke({
+            "context": context,
+            "user": user,
+            "product": product
+        }, config={"callbacks": [trace_handler]})
+        return completion, trace_handler.get_traces()[0]

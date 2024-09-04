@@ -10,5 +10,5 @@ class Node:
         raise NotImplementedError
     
     @abstractmethod
-    def to_facts(self):
+    def facts(self):
         raise NotImplementedError

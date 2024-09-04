@@ -1,0 +1,210 @@
+@import url('https://fonts.cdnfonts.com/css/mukta');
+
+body {
+  background-color: rgb(33, 33, 33);
+  background-image: url("../public/background-long.jpg");
+}
+
+h1 {
+  color: whitesmoke;
+  font-family: 'Mukta', sans-serif;
+  font-weight: 300;
+}
+
+.page-content {
+  margin-left: 80px;
+}
+
+.page-info {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.page-title {
+  margin-top: 80px;
+  margin-bottom: 0;
+  font-size: 50px;
+}
+
+.prompt-input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.prompt {
+  margin-bottom: 0;
+  font-size: 15px;
+}
+
+.genre-header {
+  margin-bottom: 0;
+  font-size: x-large;
+}
+
+.search-input {
+  margin-bottom: 0;
+  margin-left: 10px;
+}
+
+h2, .modal-header {
+  color: whitesmoke;
+  font-family: 'Mukta', sans-serif;
+  font-weight: 50;
+  font-size: medium;
+}
+
+p, label, .modal-body {
+  color: whitesmoke;
+  font-family: 'Mukta', sans-serif;
+  font-weight: 50;
+  font-size: small;;
+}
+
+.colored-text {
+  color: rgb(46, 165, 239);
+}
+
+
+input, select {
+  position: relative;
+  width: 300px;
+  outline: none;
+  font-size: 0.8em;
+  font-family: 'Mukta', sans-serif;
+  padding-left: 7px;
+  line-height: 20px;
+  border-radius: 10px;
+  border: none;
+  transition: 0.1s ease;
+  z-index: 1111;
+}
+
+.continue {
+  margin-top: 30px;
+  margin-bottom: 5px;
+  font-family: 'Mukta', sans-serif;
+  outline: none;
+  border-radius: 2px;
+  font-size: 0.8em;
+  border: none;
+  background-color: rgb(46, 165, 239);
+
+}
+
+.continue:hover {
+  cursor: pointer;
+}
+
+.continue:active {
+  background-color: rgb(58, 61, 63);
+}
+
+.search {
+  margin-left: 5px;
+  font-family: 'Mukta', sans-serif;
+  outline: none;
+  border-radius: 5px;
+  line-height: 20px;
+  font-size: 0.8em;
+  border: none;
+  background-color: rgb(46, 165, 239);
+
+}
+
+.horizontal-list {
+  margin-top: 0;
+  margin-bottom: 30px;
+  margin-left: -20px;
+  width: 100%;
+}
+
+.movie-poster {
+  width: 90%;
+  height: 100%;
+}
+
+.horizontal-list-elem {
+  width: 20%;
+  float: left;
+  padding-bottom: 10px;
+}
+
+.horizontal-list-3elem {
+  width: 30%;
+  float: left;
+}
+
+.movie-title {
+  width: 90%;
+}
+
+.image-button {
+  background-color: transparent;
+  width: 100%;
+  border: none;
+}
+
+.image-button:focus {
+  background-color: rgba(237, 237, 237, 0.56);
+  border-radius: 5px;
+  padding: 1px;
+  width: 90%;
+
+}
+
+.image-button:hover {
+  cursor: pointer;
+}
+
+div.photo-container {
+  max-width: 25em;
+  height: auto;
+  position: relative;
+}
+
+div.photo-container a {
+  text-decoration: none;
+  color: black;
+  cursor: default;
+  font-weight: normal;
+}
+
+div.photo-container a span {
+  visibility: hidden;
+  position: relative;
+  background-color: transparent;
+  color: #fff;
+  text-align: center;
+  font-size: 0.8em;
+  left: 20px;
+  cursor: default;
+  line-height: 1.4;
+  font-family: 'Mukta', sans-serif;
+}
+
+div.photo-container a:hover span {
+  visibility: visible;
+}
+
+/* Loading Animation (source: https://cssloaders.github.io/) */
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #fff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
