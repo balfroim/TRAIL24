@@ -18,3 +18,5 @@ notebooks/
 *.pkl
 *.zip
 *.pl
+
+*.DS_Store
