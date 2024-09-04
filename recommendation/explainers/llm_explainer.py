@@ -11,6 +11,7 @@ from models.reco.reco_path import RecoPath
 from models.users.user_registry import UserRegistry
 from recommendation.explainers.abstract_explainer import AbstractExplainer
 from recommendation.explainers.traces.llm_trace import LLMTrace
+from recommendation.explainers.traces.trance_handler import TraceHandler
 
 
 class LLMExplainer(AbstractExplainer):
@@ -26,12 +27,10 @@ class LLMExplainer(AbstractExplainer):
 
     def explain(self, path: RecoPath, filter_facts: Optional[List[str]]=None) -> tuple[str, LLMTrace]:
         bk, product, user = self._prepare_input(path, filter_facts)
-        trace_handler = LLMTrace()
+        trace_handler = TraceHandler()
         completion = self.__llm_chain.invoke({
             "background_knowledge": bk,
             "user": str(user),
             "product": str(product)
         }, config={"callbacks": [trace_handler]})
-        return completion, LLMTrace(
-            trace=trace_handler.get_traces()
-        )
+        return completion, trace_handler.get_traces()[0]

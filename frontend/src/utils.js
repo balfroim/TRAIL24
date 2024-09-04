@@ -49,6 +49,22 @@ export async function getExplanationApiCall(userId, productId) {
   return await genericApiCall("explain", `${userId}/${productId}`, "GET", {});
 }
 
-export async function setProfile(data) {
-  return await genericApiCall("set_profile", "", "POST", data)
+export async function setProfileApiCall(data) {
+  return await genericApiCall("set_profile", "", "POST", data);
+}
+
+export async function getPosterApiCall(productId) {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "image/jpeg");
+
+  const url = `${apiBaseUrl}/poster/${productId}`;
+
+  const options = {
+    method: "GET",
+    headers: myHeaders,
+  };
+
+  const response = await fetch(url, options);
+  console.log(response);
+  return response.ok;
 }

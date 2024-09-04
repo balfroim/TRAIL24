@@ -9,9 +9,9 @@
     <span class="loader"></span>
   </div>
   <div v-else class="horizontal-list">
-    <div v-for="product in recommended_products" class="horizontal-list-3elem" :key="product.pid">
+    <div v-for="product in recommended_products" class="horizontal-list-elem" :key="product.pid">
       <div class="photo-container">
-        <img class="movie-poster" src="../../public/sample-poster.jpeg" :alt="product.name">
+        <img class="movie-poster" :src="getPosterUrl(product.pid)" :alt="product.name">
         <p>{{ product.name }}</p>
         <button type="button" class="btn" @click="showExplanation(product.pid)">
           Explain
@@ -29,7 +29,10 @@
     </template>
 
     <template v-slot:body>
-      {{ activeExplanationContent }}
+      <p v-for="(explanation, index) in activeExplanationContent" :key="index">
+        Explanation <b>{{ index+1 }}</b><br>
+        {{ explanation }}
+      </p>
     </template>
 
     <template v-slot:footer>
@@ -59,13 +62,13 @@ export default {
       this.loading = true;
       try {
         this.recommended_products = await getRecommendationsApiCall(this.userId);
-        this.recommended_products.map((product) => this.explanations[product.pid] = "");
+        this.recommended_products.map((product) => this.explanations[product.pid] = []);
       } catch (e) {
         console.log(e);
       }
       this.loading = false;
     },
-    async getExplanation(productId) {
+    async getExplanations(productId) {
       this.loading = true;
       try {
         this.explanations[productId] = await getExplanationApiCall(this.userId, productId);
@@ -75,11 +78,14 @@ export default {
       this.loading = false;
     },
     async showExplanation(productId) {
-      if (!this.explanations[productId]) {
-        await this.getExplanation(productId);
+      if (!this.explanations[productId].length) {
+        await this.getExplanations(productId);
       }
       this.activeExplanationPid = productId;
       this.isModalVisible = true;
+    },
+    getPosterUrl(productId) {
+      return `http://localhost:8000/poster/${productId}`;
     },
     hideExplanation() {
       this.isModalVisible = false;
@@ -96,7 +102,7 @@ export default {
     activeExplanationHeader() {
       if (this.activeExplanationPid) {
         const productName = this.recommended_products.find((product) => product.pid === this.activeExplanationPid).name;
-        return `Explanation for ${productName}`;
+        return `Explanations for ${productName}`;
       } else {
         return "";
       }
@@ -107,9 +113,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
