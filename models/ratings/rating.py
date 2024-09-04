@@ -9,6 +9,7 @@ class Rating:
     user: User
     product: Product
     rating: float
+    timestamp: int
 
     def facts(self):
         return [

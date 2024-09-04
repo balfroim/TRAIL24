@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from backend.init_functions import init_cot_explainer
+from backend.init_functions import init_cot_explainer, init_llm_explainer
 from backend.metadata_functions import get_poster_path_from_pid, get_abstract_from_pid
 from models.csv_loader import CSVLoader
 from models.products.product_mapping_row import ProductMappingRow
@@ -17,17 +17,36 @@ from models.users.user_mapping_row import UserMappingRow
 from models.users.user_registry import UserRegistry
 from models.users.user_row import UserRow
 from recommendation.recommenders.random_recommender import RandomRecommender
+import dotenv
+from recommendation.registry_handler import RegistryHandler
+from recommendation.explainers.llm_explainer import LLMExplainer
+from models.reco.reco_factory import RecoFactory
+import os 
+from paths import PATHS
+
+
+
+dotenv.load_dotenv()
+
 
 product_registry = ProductRegistry(CSVLoader(ProductRow).read(), CSVLoader(ProductMappingRow).read())
 user_registry = UserRegistry(CSVLoader(UserRow).read(), CSVLoader(UserMappingRow).read())
 rating_registry = RatingRegistry(CSVLoader(RatingRow).read(), user_registry, product_registry)
-
+registry_handler = RegistryHandler(product_registry, user_registry, rating_registry)
+# explainer = LLMExplainer(registry_handler, chain)
 recommender = RandomRecommender(product_registry, user_registry, rating_registry)
 
-explainer = init_cot_explainer(product_registry, user_registry, rating_registry)
+# TODO: load llm explainer
+explainer = init_llm_explainer(registry_handler)
 
-# TODO cache recommendation paths to generate explanations
-user_reco_path_dict = {}
+
+
+# load recommendations paths
+user_recos = dict()
+for json_file_name in os.listdir(PATHS["recommendations"]):
+    user_id = int(json_file_name.split("_")[-1].split(".")[0])
+    user_reco_path = os.path.join(PATHS["recommendations"], json_file_name)
+    user_recos[user_id] = RecoFactory.from_file(user_reco_path)
 
 # data structure for product search
 name_pid_tuples = [
@@ -107,7 +126,7 @@ async def get_recommendation(user_id: int):
         reco_product = product_registry.find_by_eid(reco_path.nodes[-1].entity_id)
         products.append(reco_product)
         recommendations[reco_product.pid] = reco_path
-    user_reco_path_dict[user_id] = recommendations
+    user_recos[user_id] = recommendations
 
     return [
         {
@@ -118,15 +137,35 @@ async def get_recommendation(user_id: int):
         for product in products
     ]
 
-@app.get("/explain/{user_id}/{product_id}")
-async def get_explanations(user_id: int, product_id: int):
-    reco_path = user_reco_path_dict[user_id][product_id]
-    # TODO need to debug explainer (see with Martin)
-    # explanation_with_facts = explainer.explain(reco_path)
-    explanation_with_facts = "Dummy Explanation with facts"
-    explanation_without_facts = "Dummy Explanation without facts"
 
-    return [explanation_with_facts, explanation_without_facts]
+import re
+
+def extract_explanation(text):
+    """
+    Extracts the content between <explanation> and </explanation> tags using regular expressions.
+
+    Args:
+        text (str): The input text containing <explanation> and </explanation> tags.
+
+    Returns:
+        str: The text between <explanation> and </explanation>, or an empty string if not found.
+    """
+    pattern = r"(?<=<explanation>)(.|\n)*(?=<\/explanation>)"
+    match = re.search(pattern, text)
+
+    if match:
+        return match.group(0).strip()
+       
+    return ""
+
+@app.get("/explain/{user_id}/{reco_id}")
+async def get_explanations(user_id: int, reco_id: int):
+    reco_path = user_recos[user_id][reco_id]
+    explanation_with_names, _ = explainer.explain(reco_path)
+    explanation_without_names, _ = explainer.explain(reco_path, exclude_predicates=["name"])
+    explanation_with_names = extract_explanation(explanation_with_names)
+    explanation_without_names = extract_explanation(explanation_without_names)
+    return [explanation_with_names, explanation_without_names]
 
 @app.get("/poster/{product_id}")
 async def get_poster(product_id: int):

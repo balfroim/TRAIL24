@@ -12,6 +12,6 @@ class RatingFactory:
     @cache_to_file("ratings.pkl")
     def create_ratings(rating_rows: List[RatingRow], user_registry: UserRegistry, product_registry: ProductRegistry) -> List[Rating]:
         return [
-            Rating(user_registry.find_by_uid(rating_row.uid), product_registry.find_by_pid(rating_row.pid), rating_row.rating)
+            Rating(user_registry.find_by_uid(rating_row.uid), product_registry.find_by_pid(rating_row.pid), rating_row.rating, rating_row.timestamp)
             for rating_row in rating_rows
         ]
