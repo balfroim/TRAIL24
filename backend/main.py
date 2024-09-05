@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -39,7 +41,6 @@ registry_handler = RegistryHandler(product_registry, user_registry, rating_regis
 recommender = RandomRecommender(product_registry, user_registry, rating_registry)
 # recommender = PersonalizedPageRankRecommender(product_registry, user_registry, rating_registry)
 
-# TODO: load llm explainer
 # explainer = LLMExplainer(registry_handler, chain)
 explainer = init_llm_explainer(registry_handler)
 # explainer = init_llm_explainer_self_hosted(registry_handler)
@@ -84,8 +85,6 @@ class QuerySchema(BaseModel):
 def serve_front():
     return {"Serve": "Front"}
 
-# TODO deal with no user_id case (it must be returned by the backend)
-
 @app.post("/set_profile")
 def set_profile(profile: ProfileSchema):
     user_data = User(eid=0, uid=0, gender=profile.gender_cat, age=profile.age_cat)
@@ -108,8 +107,8 @@ def search_products(query: QuerySchema):
 def rate_product(user_id: int, rating: RatingSchema):
     user = user_registry.find_by_uid(user_id)
     product = product_registry.find_by_pid(rating.product_id)
-
-    rating = Rating(user, product, rating.value)
+    timestamp = int(datetime.timestamp(datetime.now()))
+    rating = Rating(user, product, rating.value, timestamp)
     rating_registry.add_rating(rating)
 
     return Response(status_code=status.HTTP_200_OK)

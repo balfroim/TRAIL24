@@ -34,6 +34,7 @@ class RatingRegistry:
             user=rating_data.user,
             product=rating_data.product,
             rating=rating_data.rating,
+            timestamp=rating_data.timestamp,
         )
         self.ratings.append(new_rating)
 
