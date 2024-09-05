@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from backend.init_functions import init_cot_explainer, init_llm_explainer, init_llm_explainer_self_hosted
@@ -61,13 +62,19 @@ name_pid_tuples = [
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if os.getenv("PROD"):
+    app.mount('/assets', StaticFiles(directory='Frontend/dist/assets'), name='assets')
+else:
+    app.mount('/assets', StaticFiles(directory='Frontend/src/assets'), name='assets')
+
+if not os.getenv("PROD"):
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 class ProfileSchema(BaseModel):
     gender_cat: str
@@ -83,7 +90,7 @@ class QuerySchema(BaseModel):
 # TODO to implement
 @app.get("/")
 def serve_front():
-    return {"Serve": "Front"}
+    return FileResponse('./Frontend/dist/index.html')
 
 @app.post("/set_profile")
 def set_profile(profile: ProfileSchema):
