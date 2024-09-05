@@ -27,7 +27,7 @@
       <h2>Search for a movie</h2>
       <form @submit.prevent="searchProduct">
           <label for="search_query">Search:</label>
-          <input class="search-input" type="text" id="search_query" name="search_query" placeholder="Movie Title (e.g. The Godfather)" v-model="searchQuery">
+          <input class="search-input" type="text" id="search_query" name="search_query" placeholder="Movie Title (e.g. Godfather)" v-model="searchQuery">
           <input class="search" type="submit" value="Submit">
       </form>
     </div>
