@@ -87,7 +87,7 @@ class QuerySchema(BaseModel):
 # TODO to implement
 @app.get("/")
 def serve_front():
-    return FileResponse('./Frontend/dist/index.html')
+    return FileResponse('./frontend/dist/index.html')
 
 @app.post("/set_profile")
 def set_profile(profile: ProfileSchema):
