@@ -62,7 +62,6 @@ for clause in induced_hypotheses.clauses:
     lines.append(str(clause)+"\n")
 with open("ilp_movie_recommendation/learned_clauses.txt", 'w') as f:
     f.writelines(lines)
-dskl
 
 # Query the model
 query = "recommend(A,B)."
