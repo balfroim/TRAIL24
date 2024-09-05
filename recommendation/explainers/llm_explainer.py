@@ -5,11 +5,11 @@ from models.nodes.fact import Fact
 from models.reco.reco_path import RecoPath
 from recommendation.explainers.abstract_explainer import AbstractExplainer
 from recommendation.explainers.traces.llm_trace import LLMTrace
-from recommendation.explainers.traces.trance_handler import TraceHandler
+from recommendation.explainers.traces.trace_handler import TraceHandler
 from recommendation.registry_handler import RegistryHandler
 
 
-
+# FIXME: deprecated code -> FactExplainer, should be refactored or removed
 class LLMExplainer(AbstractExplainer):
     def __init__(
             self,
@@ -45,7 +45,7 @@ class LLMExplainer(AbstractExplainer):
         return text
 
     
-    def explain(self, path: RecoPath, exclude_predicates: Optional[List[str]]=None) -> tuple[str, LLMTrace]:
+    def explain(self, path: RecoPath, exclude_predicates: Optional[List[str]]=None, **kwargs) -> tuple[str, LLMTrace]:
         if exclude_predicates is None:
             exclude_predicates = []
         # TODO maybe we should refactor the context initialization out of the method

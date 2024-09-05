@@ -6,11 +6,11 @@ from models.reco.reco_path import RecoPath
 from models.users.user_registry import UserRegistry
 from recommendation.explainers.abstract_explainer import AbstractExplainer
 from recommendation.explainers.traces.cot_trace import COTTrace
-from recommendation.explainers.traces.trance_handler import TraceHandler
+from recommendation.explainers.traces.trace_handler import TraceHandler
 from recommendation.registry_handler import RegistryHandler
 
 
-
+# FIXME: legacy code, should be refactored or removed
 class COTExplainer(AbstractExplainer):
     def __init__(
             self,

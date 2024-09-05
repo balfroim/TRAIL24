@@ -5,6 +5,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain.prompts import PromptTemplate
 from recommendation.explainers.cot_explainer import COTExplainer
+from recommendation.explainers.fact_explainer import FactExplainer
 from recommendation.explainers.llm_explainer import LLMExplainer
 
 from typing import Any, Dict, List, Optional, Iterator
@@ -95,7 +96,7 @@ def init_llm_explainer(registry_handler):
 
     chain = prompt | llm
 
-    return LLMExplainer(registry_handler, chain)
+    return FactExplainer(registry_handler, chain)
 
 
 def init_llm_explainer_self_hosted(registry_handler):
@@ -195,4 +196,4 @@ def init_llm_explainer_self_hosted(registry_handler):
 
     chain = prompt | llm
 
-    return LLMExplainer(registry_handler, chain)
+    return FactExplainer(registry_handler, chain)
