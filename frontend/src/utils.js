@@ -1,5 +1,4 @@
-
-const apiBaseUrl = "http://127.0.0.1:8000";
+const apiBaseUrl = import.meta.env.DEV ? "http://localhost:8000" : "";
 
 async function genericApiCall(endpoint, query_params, method, data) {
   const myHeaders = new Headers();
@@ -19,6 +18,7 @@ async function genericApiCall(endpoint, query_params, method, data) {
   }
 
   const response = await fetch(url, options);
+  console.log(import.meta.env.DEV);
   console.log(response);
   if (!response.ok) {
     throw new Error("API error");
