@@ -28,7 +28,7 @@
           id="modalDescription"
         >
           <slot name="body">
-            This is the default body!
+            Sorry, we were unable to provide an explanation, try again! (Consistency is not the LLM's main quality...)
           </slot>
         </section>
 
