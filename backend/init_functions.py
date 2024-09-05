@@ -66,6 +66,18 @@ def init_cot_explainer(product_registry, user_registry, rating_registry, repo_id
 
     return cot_explainer
 
+ZS_TEMPLATE = """{context}
+
+    Explain to {user} why {product} was recommended to them.
+    You can assume that the system is using a simple collaborative filtering approach.
+    The explanation should be clear and concise, without any technical jargon.
+    It should also be written in a way that is easy to understand for a non-technical user.
+    The length should be around 1-2 paragraphs.
+    The tone should be friendly and helpful but avoid greeting the user.
+    You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
+    You can also use phrases like "similar interests", "related product", "many users who liked" to make the explanation more relatable and easy to understand.
+    Put your response inside <explanation> for parsing."""
+
 def init_llm_explainer(registry_handler):
         
     llm = HuggingFaceEndpoint(
@@ -79,21 +91,7 @@ def init_llm_explainer(registry_handler):
         },
     )
 
-    template = """{context}
-
-    Explain to {user} why {product} was recommended to them.
-    You can assume that the system is using a simple collaborative filtering approach.
-    The explanation should be clear and concise, without any technical jargon.
-    It should also be written in a way that is easy to understand for a non-technical user.
-    The length should be around 1-2 paragraphs.
-    The tone should be friendly and helpful but avoid greeting the user.
-    You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
-    You can also use phrases like "similar interests", "related product", "many users who liked" to make the explanation more relatable and easy to understand.
-    Put your response inside <explanation> for parsing."""
-
-    # At the end, add the summary of the synopsis in one sentence.
-
-    prompt = PromptTemplate.from_template(template)
+    prompt = PromptTemplate.from_template(ZS_TEMPLATE)
 
     chain = prompt | llm
 
@@ -193,21 +191,7 @@ def init_llm_explainer_self_hosted(registry_handler):
         
     llm = CustomAPIWrapperLLM(api_url="http://localhost:28080")
 
-    template = """{context}
-
-    Explain to {user} why {product} was recommended to them.
-    You can assume that the system is using a simple collaborative filtering approach.
-    The explanation should be clear and concise, without any technical jargon.
-    It should also be written in a way that is easy to understand for a non-technical user.
-    The length should be around 1-2 paragraphs.
-    The tone should be friendly and helpful but avoid greeting the user.
-    You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
-    You can also use phrases like "similar interests", "related product", "many users who liked" to make the explanation more relatable and easy to understand.
-    Put your response inside <explanation> for parsing."""
-
-    # At the end, add the summary of the synopsis in one sentence.
-
-    prompt = PromptTemplate.from_template(template)
+    prompt = PromptTemplate.from_template(ZS_TEMPLATE)
 
     chain = prompt | llm
 

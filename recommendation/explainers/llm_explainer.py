@@ -26,9 +26,29 @@ class LLMExplainer(AbstractExplainer):
             text = re.sub(fact.values[0], f"\"{fact.values[1]}\"", text)
         return text
     
+    def __extract_explanation(text):
+        """
+        Extracts the content between <explanation> and </explanation> tags using regular expressions.
+
+        Args:
+            text (str): The input text containing <explanation> and </explanation> tags.
+
+        Returns:
+            str: The text between <explanation> and </explanation>, or the input text if the tags are not found.
+        """
+        pattern = r"(?<=<explanation>)(.|\n)*(?=<\/explanation>)"
+        match = re.search(pattern, text)
+
+        if match:
+            return match.group(0).strip()
+        
+        return text
+
+    
     def explain(self, path: RecoPath, exclude_predicates: Optional[List[str]]=None) -> tuple[str, LLMTrace]:
         if exclude_predicates is None:
             exclude_predicates = []
+        # TODO maybe we should refactor the context initialization out of the method
         facts = self.fact_collector.collect_facts_from_path(path)
         included_facts, _ = self.fact_collector.exclude_facts(facts, exclude_predicates)
         context = "\n".join([str(fact) for fact in included_facts])
@@ -39,8 +59,7 @@ class LLMExplainer(AbstractExplainer):
             "user": str(user),
             "product": str(product)
         }, config={"callbacks": [trace_handler]})
-        # if "name" in exclude_predicates:
         name_facts = [fact for fact in facts if fact.predicate == "name"]
         completion = self.__clean_product_name(completion, name_facts)
-        # completion = re.sub(r"Product\s?\d+(,\s?)?", "", completion)
+        completion = self.__extract_explanation(completion)
         return completion, trace_handler.get_traces()[0]
