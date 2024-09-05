@@ -8,8 +8,7 @@ import numpy as np
 import pandas as pd
 
 from metrics_alone.utils import get_dataset_id2eid
-
-DATA_DIR = "results/"
+from metrics_alone.eval_paths import DATA_DIR
 
 SERENDIPITY = "serendipity"
 COVERAGE = "coverage"

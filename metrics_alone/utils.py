@@ -5,12 +5,11 @@ import csv
 from os.path import join
 import os
 from typing import Dict
+from metrics_alone.eval_paths import DATA_DIR
 
 SEED = 2023
-DATA_DIR = "results/"
-# MAPPING = "mappings/"
 
-import torch 
+# import torch
 import random
 import numpy as np
 
@@ -29,14 +28,14 @@ def normalise_name(name: str) -> str:
         name = name.replace("Category:", "")
     return name.replace("_", " ")
 
-def set_seed(seed=SEED, use_deterministic=True):
-    torch.manual_seed(seed)
-    torch.use_deterministic_algorithms(use_deterministic)
-    np.random.seed(seed) 
-    random.seed(seed)
+# def set_seed(seed=SEED, use_deterministic=True):
+#     torch.manual_seed(seed)
+#     torch.use_deterministic_algorithms(use_deterministic)
+#     np.random.seed(seed)
+#     random.seed(seed)
 
 def get_dataset_id2eid(dataset_name: str, what: str="user") -> Dict[str, str]:
-    data_dir = os.path.join(DATA_DIR, dataset_name, 'preprocessed')
+    data_dir = os.path.join(DATA_DIR, dataset_name, "preprocessed")
     # data_dir = os.path.join('metrics_alone/data', dataset_name, 'preprocessed')
     # file = open(os.path.join(data_dir, f"{MAPPING}/{what}.txt"), "r")
     file = open(os.path.join(data_dir, f"mapping/{what}.txt"), "r")

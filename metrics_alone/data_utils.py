@@ -8,8 +8,7 @@ from collections import defaultdict
 from typing import Dict, List
 from tqdm import tqdm
 from metrics_alone.utils import get_dataset_id2eid
-
-DATA_DIR = "results/"
+from metrics_alone.eval_paths import DATA_DIR
 
 def get_user_negatives(dataset_name: str) -> Dict[int, List[int]]:
     """
