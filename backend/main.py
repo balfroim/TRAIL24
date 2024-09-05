@@ -144,7 +144,7 @@ async def get_recommendation(user_id: int):
 @app.get("/explain/{user_id}/{reco_id}")
 async def get_explanations(user_id: int, reco_id: int):
     reco_path = user_recos[user_id][reco_id]
-    explanation_with_names = explainer.explain(path=reco_path)
+    explanation_with_names = explainer.explain(path=reco_path, exclude_predicates=["gender", "genre", "age"])
     explanation_without_names = explainer.explain(path=reco_path, exclude_predicates=["name"])
     return [explanation_with_names, explanation_without_names]
 

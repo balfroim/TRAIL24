@@ -69,27 +69,93 @@ def init_cot_explainer(product_registry, user_registry, rating_registry, repo_id
 
 ZS_TEMPLATE = """{context}
 
-    Explain to {user} why {product} was recommended to them.
-    You can assume that the system is using a simple collaborative filtering approach.
-    The explanation should be clear and concise, without any technical jargon.
-    It should also be written in a way that is easy to understand for a non-technical user.
-    The length should be around 1-2 paragraphs.
-    The tone should be friendly and helpful but avoid greeting the user.
-    You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
-    You can also use phrases like "similar interests", "related product", "many users who liked" to make the explanation more relatable and easy to understand.
-    Put your response inside <explanation> for parsing."""
+Explain to {user} why {product} was recommended to them.
+You can assume that the system is using a simple collaborative filtering approach.
+The explanation should be clear and concise, without any technical jargon.
+It should also be written in a way that is easy to understand for a non-technical user.
+The length should be around 1-2 paragraphs.
+The tone should be friendly and helpful but avoid greeting the user.
+You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
+You can also use phrases like "similar interests", "related product", "many users who liked" to make the explanation more relatable and easy to understand.
+Put your response inside <explanation> </explanation> tags."""
+
+# ZS_TEMPLATE = """{context}
+
+# Explain to {user} why {product} was recommended to them.
+# You can assume that the system is using a combination of collaborative filtering and broader trends from similar products or categories. 
+# The explanation should provide meaningful insights and draw connections that may not be immediately apparent but are supported by general patterns or trends. 
+# The length should be around 1-2 paragraphs.
+# The tone should be friendly and helpful but avoid greeting the user.
+# You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
+# You can also use phrases like "deeper patterns", "related trends", "common connections", or "based on broader preferences" to suggest insights that extend beyond straightforward similarities.
+# Put your response inside <explanation> </explanation> tags.
+# """
+
+# ZS_TEMPLATE = """{context}
+
+# Explain to {user} why {product} was recommended to them.
+# You can assume that the system is using a simple collaborative filtering approach.
+# The explanation should be clear and concise, without any technical jargon.
+# The explanation should provide meaningful insights and draw connections that may not be immediately apparent when looking at the background knowledge. 
+# The length should be around 1-2 paragraphs.
+# The tone should be friendly and helpful but avoid greeting the user.
+# You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
+# You can also use phrases like "deeper patterns", "related trends", "common connections", or "based on broader preferences" to suggest insights that extend beyond straightforward similarities.
+# Put your response inside <explanation> </explanation> tags.
+# """
+
+# ZS_TEMPLATE = """{context}
+
+# Explain to {user} why {product} was recommended to them.
+# You can assume that the system is using a simple collaborative filtering approach, but also consider what might make {product} particularly notable or relevant based on its title or category. 
+# Feel free to highlight any known qualities or common associations related to {product}, in addition to the collaborative filtering approach.
+# The explanation should be clear and concise, without any technical jargon.
+# It should also be written in a way that is easy to understand for a non-technical user.
+# The length should be around 1-2 paragraphs.
+# The tone should be friendly and helpful but avoid greeting the user.
+# You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
+# You can also use phrases like "related product", "many users who liked", or "commonly known for" to make the explanation more relatable and easy to understand.
+# Put your response inside <explanation> </explanation> tags.
+# """
+
+# ZS_TEMPLATE = """{context}
+
+# Explain to {user} why {product} was recommended to them.
+# You can assume that the system is using a combination of collaborative filtering and broader trends from similar products or categories. 
+# The explanation should provide meaningful insights and draw connections that may not be immediately apparent but are supported by general patterns or trends. 
+# Additionally, try to subtly incorporate elements from the story of the product, such as themes, characters, or plotlines, to make the explanation more relatable and engaging.
+# The length should be around 1-2 paragraphs.
+# The tone should be friendly and helpful but avoid greeting the user.
+# You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
+# You can also use phrases like "deeper patterns", "related trends", "common connections", or "based on broader preferences" to suggest insights that extend beyond straightforward similarities.
+# Put your response inside <explanation> </explanation> tags.
+# """
+
+ZS_TEMPLATE = """{context}
+
+Explain to {user} why {product} was recommended to them.
+You can assume that the system is using a combination of collaborative filtering and broader trends from similar products or categories. 
+The explanation should provide meaningful insights and draw connections that may not be immediately apparent. 
+The length should be around 1-2 paragraphs.
+The tone should be friendly and helpful but avoid greeting the user.
+You can use phrases like "we noticed", "we thought", "we hope" to make the explanation more conversational. 
+You can also use phrases like "deeper patterns", "related trends", "common connections", or "based on broader preferences" to suggest insights that extend beyond straightforward similarities.
+Put your response inside <explanation> </explanation> tags.
+"""
+
+ZS_METAPARAMS = {
+    "max_new_tokens": 5012,
+    "top_p": 0.9,
+    "temperature": 0.3,
+    "repetition_penalty": 1.1,
+}
 
 def init_llm_explainer(registry_handler):
         
     llm = HuggingFaceEndpoint(
-        repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
-        # repo_id="meta-llama/Meta-Llama-3-8B-Instruct",
-        **{
-            "max_new_tokens": 512,
-            "top_k": 50,
-            "temperature": 0.1,
-            "repetition_penalty": 1.03,
-        },
+        # repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
+        repo_id="meta-llama/Meta-Llama-3-8B-Instruct",
+        **ZS_METAPARAMS,
     )
 
     prompt = PromptTemplate.from_template(ZS_TEMPLATE)
