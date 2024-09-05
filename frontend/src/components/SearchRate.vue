@@ -3,14 +3,14 @@
   <p class="page-info">
     To personalize your experience with Movielens, we would like to
     know your favorite movies. <br><span class="colored-text">Please provide the titles
-    of 5 of your favourite movies</span> (the order does not matter).
+    of 3 of your favourite movies</span> (the order does not matter).
   </p>
   <div v-if="loading">
     <span class="loader"></span>
   </div>
   <div v-else>
     <div>
-      <h2>Current Ratings</h2>
+      <h2>Current Favorites</h2>
       <p v-if="ratings.length">
         <ul>
           <li v-for="rating in ratings" :key="rating.productId">
@@ -19,16 +19,16 @@
           </li>
         </ul>
       </p>
-      <p v-else>No Rating</p>
+      <p v-else>No Favorite</p>
       <button class="continue" @click="switchToRec" :disabled="ratings.length === 0">Get Recommendations</button>
     </div>
 
     <div>
-      <h2>Search for a movie</h2>
+      <h2>Search for a movie (2000 or older)</h2>
       <form @submit.prevent="searchProduct">
           <label for="search_query">Search:</label>
           <input class="search-input" type="text" id="search_query" name="search_query" placeholder="Movie Title (e.g. Godfather)" v-model="searchQuery">
-          <input class="search" type="submit" value="Submit">
+          <input class="search" type="submit" value="Search">
       </form>
     </div>
 
@@ -39,7 +39,7 @@
           <img class="movie-poster" :src="getPosterUrl(pid)" :alt="name">
           <p>{{ name }}</p>
           <button type="button" class="btn" @click="addRating(pid)">
-            Like!
+            Add to Favorites!
           </button>
         </div>
       </div>
