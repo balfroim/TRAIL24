@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import {getExplanationApiCall, getRecommendationsApiCall} from "../utils.js";
+import {apiBaseUrl, getExplanationApiCall, getRecommendationsApiCall} from "../utils.js";
 import Modal from "./Modal.vue";
 
 export default {
@@ -85,7 +85,7 @@ export default {
       this.isModalVisible = true;
     },
     getPosterUrl(productId) {
-      return `http://localhost:8000/poster/${productId}`;
+      return `${apiBaseUrl}/poster/${productId}`;
     },
     hideExplanation() {
       this.isModalVisible = false;

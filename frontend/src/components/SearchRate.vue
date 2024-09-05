@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {addRateApiCall, deleteRateApiCall, searchApiCall} from "../utils.js";
+import {addRateApiCall, apiBaseUrl, deleteRateApiCall, searchApiCall} from "../utils.js";
 
 export default {
   props: ['userId'],
@@ -116,7 +116,7 @@ export default {
       this.loading = false;
     },
     getPosterUrl(productId) {
-      return `http://localhost:8000/poster/${productId}`;
+      return `${apiBaseUrl}/poster/${productId}`;
       // const isPosterAvailable = await getPosterApiCall(productId);
       // if (isPosterAvailable) {
       //   return `http://localhost:8000/poster/${productId}`;

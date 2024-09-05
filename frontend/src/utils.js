@@ -1,4 +1,4 @@
-const apiBaseUrl = import.meta.env.DEV ? "http://localhost:8000" : "";
+export const apiBaseUrl = import.meta.env.DEV ? "http://localhost:8000" : "";
 
 async function genericApiCall(endpoint, query_params, method, data) {
   const myHeaders = new Headers();
