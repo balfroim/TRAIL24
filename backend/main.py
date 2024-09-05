@@ -27,7 +27,7 @@ from recommendation.explainers.llm_explainer import LLMExplainer
 from models.reco.reco_factory import RecoFactory
 import os 
 from paths import PATHS
-
+import random
 
 
 dotenv.load_dotenv()
@@ -59,6 +59,8 @@ name_pid_tuples = [
     (product.name.lower().strip(), product.pid)
     for product in product_registry.products
 ]
+
+random.seed=42
 
 app = FastAPI()
 
@@ -105,6 +107,12 @@ def search_products(query: QuerySchema):
 
     results = [t for t in name_pid_tuples if formatted_value in t[0]]
 
+    return {t[1]: t[0] for t in results}
+
+@app.get("/random")
+def get_random_products(k: int = 5):
+    k = 20 if k > 20 else k
+    results = random.sample(name_pid_tuples, k)
     return {t[1]: t[0] for t in results}
 
 @app.post("/rate/{user_id}")

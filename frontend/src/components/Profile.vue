@@ -7,10 +7,10 @@
     <span class="loader"></span>
   </div>
   <form v-else @submit.prevent="setProfile">
-    <div class="prompt-input">
-      <label class="prompt" for="name">What is your name?</label><br>
-      <input type="text" id="name" name="name" placeholder="Name (e.g. John Doe)" required>
-    </div>
+<!--    <div class="prompt-input">-->
+<!--      <label class="prompt" for="name">What is your name?</label><br>-->
+<!--      <input type="text" id="name" name="name" placeholder="Name (e.g. John Doe)" required>-->
+<!--    </div>-->
     <div class="prompt-input">
       <label class="prompt" for="gender_cat">Gender:</label><br>
       <select id="gender_cat" name="gender_cat" v-model="gender_cat" required>
