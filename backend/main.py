@@ -145,33 +145,11 @@ async def get_recommendation(user_id: int):
     ]
 
 
-import re
-
-def extract_explanation(text):
-    """
-    Extracts the content between <explanation> and </explanation> tags using regular expressions.
-
-    Args:
-        text (str): The input text containing <explanation> and </explanation> tags.
-
-    Returns:
-        str: The text between <explanation> and </explanation>, or an empty string if not found.
-    """
-    pattern = r"(?<=<explanation>)(.|\n)*(?=<\/explanation>)"
-    match = re.search(pattern, text)
-
-    if match:
-        return match.group(0).strip()
-       
-    return ""
-
 @app.get("/explain/{user_id}/{reco_id}")
 async def get_explanations(user_id: int, reco_id: int):
     reco_path = user_recos[user_id][reco_id]
-    explanation_with_names, _ = explainer.explain(reco_path)
-    explanation_without_names, _ = explainer.explain(reco_path, exclude_predicates=["name"])
-    explanation_with_names = extract_explanation(explanation_with_names)
-    explanation_without_names = extract_explanation(explanation_without_names)
+    explanation_with_names = explainer.explain(path=reco_path, exclude_predicates=["gender", "genre", "age"])
+    explanation_without_names = explainer.explain(path=reco_path, exclude_predicates=["name"])
     return [explanation_with_names, explanation_without_names]
 
 @app.get("/poster/{product_id}")
