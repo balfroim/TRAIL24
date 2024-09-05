@@ -62,10 +62,7 @@ name_pid_tuples = [
 
 app = FastAPI()
 
-if os.getenv("PROD"):
-    app.mount('/assets', StaticFiles(directory='Frontend/dist/assets'), name='assets')
-else:
-    app.mount('/assets', StaticFiles(directory='Frontend/src/assets'), name='assets')
+app.mount('/assets', StaticFiles(directory='frontend/dist/assets'), name='assets')
 
 if not os.getenv("PROD"):
     app.add_middleware(
