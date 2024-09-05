@@ -10,25 +10,32 @@
   </div>
   <div v-else>
     <div>
-      <h2>Current Favorites</h2>
+      <h2>
+        Current Favorites
+        <button class="continue" @click="switchToRec" :disabled="ratings.length === 0">Go to Recommendations</button>
+      </h2>
       <p v-if="ratings.length">
         <ul>
           <li v-for="rating in ratings" :key="rating.productId">
             {{ rating.productName }} ({{ rating.value }})
-            <button @click="deleteRating(rating.productId)">X</button>
+            <button class="search" @click="deleteRating(rating.productId)">X</button>
           </li>
         </ul>
       </p>
       <p v-else>No Favorite</p>
-      <button class="continue" @click="switchToRec" :disabled="ratings.length === 0">Get Recommendations</button>
+
     </div>
 
     <div>
-      <h2>Search for a movie (2000 or older)</h2>
+      <h2>Look for a movie (2000 or older)</h2>
+      <form @submit.prevent="randomProduct">
+        <label for="search_query">Generate Random:</label>
+        <input class="search" type="submit" value="Random">
+      </form>
       <form @submit.prevent="searchProduct">
-          <label for="search_query">Search:</label>
-          <input class="search-input" type="text" id="search_query" name="search_query" placeholder="Movie Title (e.g. Godfather)" v-model="searchQuery">
-          <input class="search" type="submit" value="Search">
+        <label for="search_query">Search for a Title:</label>
+        <input class="search-input" type="text" id="search_query" name="search_query" placeholder="Movie Title (e.g. Godfather)" v-model="searchQuery">
+        <input class="search" type="submit" value="Search">
       </form>
     </div>
 
@@ -49,7 +56,7 @@
 </template>
 
 <script>
-import {addRateApiCall, apiBaseUrl, deleteRateApiCall, searchApiCall} from "../utils.js";
+import {addRateApiCall, apiBaseUrl, deleteRateApiCall, randomApiCall, searchApiCall} from "../utils.js";
 
 export default {
   props: ['userId'],
@@ -81,6 +88,15 @@ export default {
         } catch (e) {
           console.log(e);
         }
+      }
+      this.loading = false;
+    },
+    async randomProduct() {
+      this.loading = true;
+      try {
+        this.searchResults = await randomApiCall();
+      } catch (e) {
+        console.log(e);
       }
       this.loading = false;
     },
@@ -130,3 +146,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+form {
+  margin-bottom: 10px;
+}
+</style>

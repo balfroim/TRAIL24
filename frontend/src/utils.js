@@ -30,7 +30,11 @@ async function genericApiCall(endpoint, query_params, method, data) {
 }
 
 export async function searchApiCall(data) {
-  return await genericApiCall("search", '', "POST", data);
+  return await genericApiCall("search", "", "POST", data);
+}
+
+export async function randomApiCall(k = 5) {
+  return await genericApiCall("random", `?k=${k}`, "GET", {})
 }
 
 export async function addRateApiCall(data, userId) {

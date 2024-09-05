@@ -109,7 +109,7 @@ input, select {
   font-size: 0.8em;
   border: none;
   background-color: rgb(46, 165, 239);
-
+  cursor: pointer;
 }
 
 .horizontal-list {
